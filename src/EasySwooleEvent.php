@@ -74,12 +74,12 @@ class EasySwooleEvent
         is_dir(strtolower(EnvConst::PATH_TEMP)) ? null : mkdir(strtolower(EnvConst::PATH_TEMP), 0777, true);
         is_dir(strtolower(EnvConst::PATH_LOCK)) ? null : mkdir(strtolower(EnvConst::PATH_LOCK), 0777, true);
 
-        /** 拷贝钩子 */
-        if (isDev()) {
-            $gitPreCommit = EASYSWOOLE_ROOT . '/.git/hooks/pre-commit';
-            copy(EASYSWOOLE_ROOT . '/vendor/alanchen365/easyswoole3-extension/src/Hocks/pre-commit', $gitPreCommit);
-            chmod($gitPreCommit, 0755);
-        }
+//        /** 拷贝钩子 */
+//        if (isDev()) {
+//            $gitPreCommit = EASYSWOOLE_ROOT . '/.git/hooks/pre-commit';
+//            copy(EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/Hocks/pre-commit', $gitPreCommit);
+//            chmod($gitPreCommit, 0755);
+//        }
 
         /** ORM  */
         $mysqlConf = config('mysql', true);
