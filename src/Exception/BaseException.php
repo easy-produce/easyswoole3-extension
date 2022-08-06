@@ -15,7 +15,7 @@ class BaseException extends \Exception
 
     public function __construct(int $code, string $msg = '', \Throwable $previous = null)
     {
-        $loggerHandel = new LoggerHandel(EnvConst::PATH_LOG);
+        $loggerHandel = new LoggerHandel(strtolower(EnvConst::PATH_LOG));
         $loggerHandel->setTrace($this->getTrace());
         $loggerHandel->getLine($this->getLine());
         $loggerHandel->setFile($this->getFile());

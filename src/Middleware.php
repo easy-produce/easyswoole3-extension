@@ -115,7 +115,7 @@ class Middleware
         /** 单独记录慢日志 */
         if ($runTime > round(LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
 
-            $logPath = \App\Constant\EnvConst::PATH_LOG . "/" . LoggerConst::LOG_NAME_SLOG;
+            $logPath = strtolower(\App\Constant\EnvConst::PATH_LOG . "/" . LoggerConst::LOG_NAME_SLOG);
             $fileDate = date('Ymd', time());
             $filePath = "{$logPath}/{$fileDate}.log";
             
