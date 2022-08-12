@@ -51,4 +51,24 @@ class Policy
 
         return !$isAuth;
     }
+
+    /**
+     * 验签白名单策略
+     */
+    public function isSign(): bool
+    {
+        $isSign = true;
+
+        $policy = Di::getInstance()->get(AppConst::POLICY_CONF_IS_SIGN);
+        $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+
+        $uri = $request->getServerParams()['request_uri'];
+        $isSign = $policy->check($uri);
+
+        if ($isSign == PolicyNode::EFFECT_ALLOW) {
+            $isSign = false;
+        }
+
+        return !$isSign;
+    }
 }

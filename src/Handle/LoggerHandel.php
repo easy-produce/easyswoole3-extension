@@ -92,10 +92,6 @@ class LoggerHandel implements LoggerInterface
 
     function console(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'console')
     {
-        if (isProduction()) {
-            return;
-        }
-
         $date = date('Y-m-d H:i:s');
         $levelStr = $this->levelMap($logLevel);
         $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";

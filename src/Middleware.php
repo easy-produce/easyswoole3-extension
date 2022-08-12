@@ -13,6 +13,7 @@ use EasySwoole\Http\Request;
 use \EasySwoole\Http\Response;
 
 use EasySwoole\Log\LoggerInterface;
+use Es3\Exception\ErrorException;
 use Es3\Handle\LoggerHandel;
 use Es3\Utility\File;
 
@@ -24,11 +25,14 @@ class Middleware
 
         $self = new self();
 
+        /** Api验签 */
+        $self->sign($request, $response);
+
         /** 空参数过滤 */
         $self->clearEmptyParams($request, $response);
 
-        /** 写入请求日主 */
-        $self->access($request, $response);
+        /** 写入请求日志 */
+//        $self->access($request, $response);
     }
 
     public static function afterRequest(Request $request, Response $response)
@@ -42,7 +46,7 @@ class Middleware
         $self->slog($request, $response);
     }
 
-    private function crossDomain(Request $request, $response)
+    private function crossDomain(Request $request, Response $response)
     {
         // 任何环境都不做限制
         $headers = 'Content-Type, Authorization, X-Requested-With, token, identity';
@@ -68,10 +72,9 @@ class Middleware
             $response->end();
             return true;
         }
-
     }
 
-    private function clearEmptyParams(Request $request, $response): void
+    private function clearEmptyParams(Request $request, Response $response): void
     {
         if ($request->getMethod() != 'GET') {
             return;
@@ -87,7 +90,7 @@ class Middleware
         $request->withQueryParams($params);
     }
 
-    private function slog(Request $request, $response)
+    private function slog(Request $request, Response $response)
     {
         /** 从请求里获取之前增加的时间戳 */
         $reqTime = $request->getAttribute(LoggerConst::LOG_NAME_ACCESS);
@@ -95,22 +98,6 @@ class Middleware
         $runTime = round(microtime(true) - $reqTime, 5);
         /** 拼接一个简单的日志 */
         $runTime = round(floatval($runTime * 1000), 0);
-//        $accessLog = [
-////            EnvConst::SERVICE_NAME,
-////            AppConst::APP_NAME,
-////            traceCode(),
-//            $request->getMethod(),
-//            $request->getUri(),
-//            "{$runTime} ms",
-////            $request->getHeader('user-agent')[0] ?? '',
-////            jsonEncode(requestLog()),
-////            jsonEncode(debug_backtrace()),
-//        ];
-//
-//        $accessLog = implode($accessLog, '  |   ');
-
-        /** 正常日志 */
-//        Logger::getInstance()->log(jsonEncode($accessLog), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
 
         /** 单独记录慢日志 */
         if ($runTime > round(LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
@@ -118,16 +105,47 @@ class Middleware
             $logPath = strtolower(\App\Constant\EnvConst::PATH_LOG . "/" . LoggerConst::LOG_NAME_SLOG);
             $fileDate = date('Ymd', time());
             $filePath = "{$logPath}/{$fileDate}.log";
-            
+
             clearstatcache();
             is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
             file_put_contents($filePath, "{$runTime} ms", FILE_APPEND | LOCK_EX);
         }
     }
 
-    private function access(Request $request, $response)
+    /**
+     * api验签
+     * @param \EasySwoole\Http\Request $request
+     * @param \EasySwoole\Http\Response $response
+     */
+    private function sign(Request $request, Response $response)
     {
-//        $accessLog = $request->getUri() . ' | ' . $request->getHeader('user-agent')[0];
-//        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
+        $nameSpace = 'App\Util\ApiSign';
+
+        /** 非生产环境兼容 */
+        if (!isProduction() && $request->getQueryParam('is_debug')) {
+            return null;
+        }
+
+        /** 是否开启校验 */
+        $isVerify = config("sign.verify", true);
+        if (!$isVerify) {
+            return;
+        }
+
+        $isVerify = class_exists($nameSpace);
+        if (!$isVerify) {
+            return null;
+        }
+
+        /** API签名校验 */
+        $ref = new \ReflectionClass($nameSpace);
+        $apiSign = $ref->newInstance();
+        $isSuccess = $apiSign->decode($request, $response);
+
+        // 是否报错
+        $isError = config("sign.error", true);
+        if (!$isSuccess && $isError) {
+            throw new ErrorException(401, '签名错误');
+        }
     }
 }
