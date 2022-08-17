@@ -119,8 +119,12 @@ class EasySwooleEvent
 
         /** 策略加载 */
         Di::getInstance()->set(AppConst::POLICY_CONF_IS_AUTH, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_AUTH));
-        Di::getInstance()->set(AppConst::POLICY_CONF_IS_SIGN, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN));
-        
+
+        $policyConfIsSign = (new \ReflectionClass(AppConst::class))->getConstant('POLICY_CONF_IS_SIGN');
+        if ($policyConfIsSign) {
+            Di::getInstance()->set(AppConst::POLICY_CONF_IS_SIGN, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN));
+        }
+
         /** smarty */
         Render::getInstance()->getConfig()->setRender(new Smarty());
         Render::getInstance()->getConfig()->setTempDir(EASYSWOOLE_TEMP_DIR);
