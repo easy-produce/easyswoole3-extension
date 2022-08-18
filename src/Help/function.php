@@ -76,13 +76,17 @@ function clientIp(): ?string
     if (!($request instanceof Request)) {
         return null;
     }
+    // 优先在x-forwarded-for获取
+    $xForwardedFor = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->connection_info($request->getSwooleRequest()->fd)['x-forwarded-for'] ?? null;
+    $xForwardedFor = '';
+    $ip = current(explode(',', $xForwardedFor)) ?? null;
 
-    $ip = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->connection_info($request->getSwooleRequest()->fd)['remote_ip'] ?? null;
+    if (!$ip) {
+        $ip = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->connection_info($request->getSwooleRequest()->fd)['remote_ip'] ?? null;
+    }
+
+    // 最后获取 remote_ip 需要在nginx转过来
     return $ip;
-
-    //header 地址，例如经过nginx proxy后
-    //    $ip2 = $request->getHeaders();
-    //    var_dump($ip2);
 }
 
 function requestLog(): ?array
