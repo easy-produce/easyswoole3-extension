@@ -236,3 +236,18 @@ function setLogExtend(string $extendId)
     $extendId = mb_substr($extendId, 50);
     Di::getInstance()->set(\Es3\Constant\ResultConst::EXTEND_ID_KEY, $extendId);
 }
+
+/**
+ * 捕获异常具体的位置
+ */
+function setResultFile(Throwable $throwable, int $traceNumber = 2)
+{
+    if (isHttp()) {
+        $trace = $throwable->getTrace()[$traceNumber] ?? null;
+        $file = $trace['file'] ?? null . $trace['function'] ?? null;
+        $line = $trace['line'] ?? null;
+
+        Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $file);
+        Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
+    }
+}

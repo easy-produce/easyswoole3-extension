@@ -36,34 +36,40 @@ trait Dao
 
     public function updateField(array $originalFieldValues, array $updateFieldValues, $allow = false): int
     {
-        $originalFieldValues = $this->adjustWhere($originalFieldValues);
+        try {
+            $originalFieldValues = $this->adjustWhere($originalFieldValues);
 
-        $schemaInfo = $this->model->schemaInfo();
-        $primaryKey = $schemaInfo->getPkFiledName();
+            $schemaInfo = $this->model->schemaInfo();
+            $primaryKey = $schemaInfo->getPkFiledName();
 
-        // 不允许更新主键
-        unset($updateFieldValues[$primaryKey]);
+            // 不允许更新主键
+            unset($updateFieldValues[$primaryKey]);
 
-        if (superEmpty($originalFieldValues) || superEmpty($updateFieldValues)) {
-            throw new ErrorException(1011, "updateField()更新参数不能为空");
+            if (superEmpty($originalFieldValues) || superEmpty($updateFieldValues)) {
+                throw new ErrorException(1011, "updateField()更新参数不能为空");
+            }
+
+            $this->model = $this->model::create();
+            $updateFieldValues = $this->model->autoUpdateUser($updateFieldValues);
+
+            $updateFieldValues = $this->model->autoUpdateUser($updateFieldValues);
+            $this->model->update($updateFieldValues, $originalFieldValues, $allow);
+
+            if (!$this->model->lastQueryResult()) {
+                throw new WaringException(1006, '更新出现异常 请检查参数');
+            }
+
+            $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
+            if ($lastErrorNo !== 0) {
+                throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
+            }
+
+            return intval($this->model->lastQueryResult()->getAffectedRows());
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
-
-        $this->model = $this->model::create();
-        $updateFieldValues = $this->model->autoUpdateUser($updateFieldValues);
-
-        $updateFieldValues = $this->model->autoUpdateUser($updateFieldValues);
-        $this->model->update($updateFieldValues, $originalFieldValues, $allow);
-
-        if (!$this->model->lastQueryResult()) {
-            throw new WaringException(1006, '更新出现异常 请检查参数');
-        }
-
-        $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
-        if ($lastErrorNo !== 0) {
-            throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
-        }
-
-        return intval($this->model->lastQueryResult()->getAffectedRows());
     }
 
     public function get(array $where = [], array $field = [])
@@ -76,142 +82,199 @@ trait Dao
 
     public function delete($where = null, $allow = false): int
     {
-        $this->model = $this->model::create();
-        $this->model->delete($where, $allow);
+        try {
+            $this->model = $this->model::create();
+            $this->model->delete($where, $allow);
 
-        $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
-        if ($lastErrorNo !== 0) {
-            throw new ErrorException(1004, $model->lastQueryResult()->getLastError());
+            $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
+            if ($lastErrorNo !== 0) {
+                throw new ErrorException(1004, $model->lastQueryResult()->getLastError());
+            }
+
+            return intval($this->model->lastQueryResult()->getAffectedRows());
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
-
-        return intval($this->model->lastQueryResult()->getAffectedRows());
     }
 
     public function update(array $data = [], array $primary, $allow = false): int
     {
-        $schemaInfo = $this->model->schemaInfo();
-        $primaryKey = $schemaInfo->getPkFiledName();
+        try {
+            $schemaInfo = $this->model->schemaInfo();
+            $primaryKey = $schemaInfo->getPkFiledName();
 
-        // 不允许更新主键
-        unset($data[$primaryKey]);
+            // 不允许更新主键
+            unset($data[$primaryKey]);
 
-        /** 调整参数 */
-        $data = $this->adjustWhere($data);
-        $data = $this->model->autoUpdateUser($data);
+            /** 调整参数 */
+            $data = $this->adjustWhere($data);
+            $data = $this->model->autoUpdateUser($data);
 
-        $this->model = $this->model::create();
-        $this->model->update($data, $primary, $allow);
+            $this->model = $this->model::create();
+            $this->model->update($data, $primary, $allow);
 
-        $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
-        if ($lastErrorNo !== 0) {
-            throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
+            $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
+            if ($lastErrorNo !== 0) {
+                throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
+            }
+
+            return intval($this->model->lastQueryResult()->getAffectedRows());
+        } catch (\Throwable $throwable) {
+
+            setResultFile($throwable, 1);
+
+            $msg = $throwable->getMessage() . "file:{$file} line:{$line}";
+            throw new ErrorException($throwable->getCode(), $msg);
         }
-
-        return intval($this->model->lastQueryResult()->getAffectedRows());
     }
 
     public function getLast(string $field = 'id'): ?array
     {
-        $row = $this->model::create()->order($field, 'DESC')->get();
-        return $row->toArray() ?? [];
+        try {
+            $row = $this->model::create()->order($field, 'DESC')->get();
+            return $row->toArray() ?? [];
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+        }
     }
 
     public function getAutoIncrement(): ?int
     {
-        $schemaInfo = $this->model->schemaInfo();
-        $res = $this->model::create()->query((new QueryBuilder())->raw("select auto_increment from information_schema.tables where table_name = '" . $schemaInfo->getTable() . "'"));
+        try {
+            $schemaInfo = $this->model->schemaInfo();
+            $res = $this->model::create()->query((new QueryBuilder())->raw("select auto_increment from information_schema.tables where table_name = '" . $schemaInfo->getTable() . "'"));
 
-        return $res[0]['auto_increment'] ?? null;
+            return $res[0]['auto_increment'] ?? null;
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+        }
     }
 
     public function setAutoIncrement(int $autoIncrement): void
     {
-        $schemaInfo = $this->model->schemaInfo();
-        $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
+        try {
+
+            $schemaInfo = $this->model->schemaInfo();
+            $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+        }
     }
 
     public function getAll($where = null, array $page = [], array $orderBys = [], array $groupBys = [], array $fields = [])
     {
-        $model = $this->model::create();
-        $tableName = $model->getTableName();
-        $LogicDelete = $this->model->getLogicDelete();
-        $where = array_merge((array)$where, $LogicDelete);
-        $where = $this->adjustWhere($where);
+        try {
+            $model = $this->model::create();
+            $tableName = $model->getTableName();
+            $LogicDelete = $this->model->getLogicDelete();
+            $where = array_merge((array)$where, $LogicDelete);
+            $where = $this->adjustWhere($where);
 
-        if ($page) {
-            $model->limit($page[0], $page[1]);
-        }
+            if ($page) {
+                $model->limit($page[0], $page[1]);
+            }
 
-        /** 没有传递排序 默认一个 */
-        if (superEmpty($orderBys)) {
-            $pk = $model->schemaInfo()->getPkFiledName();
-            $orderBys = [$pk => 'DESC'];
-        }
+            /** 没有传递排序 默认一个 */
+            if (superEmpty($orderBys)) {
+                $pk = $model->schemaInfo()->getPkFiledName();
+                $orderBys = [$pk => 'DESC'];
+            }
 
-        if ($orderBys) {
-            foreach ($orderBys as $key => $orderBy) {
-                /** 如果该字段在表中不存在 就报错 */
-                $isExist = \Es3\Utility\Model::columnIsExist($model, $key);
-                if (!$isExist) {
-                    throw new WaringException(1063, "无法按{$key}进行排序 数据表{$tableName}不存在{$key}字段");
+            if ($orderBys) {
+                foreach ($orderBys as $key => $orderBy) {
+                    /** 如果该字段在表中不存在 就报错 */
+                    $isExist = \Es3\Utility\Model::columnIsExist($model, $key);
+                    if (!$isExist) {
+                        throw new WaringException(1063, "无法按{$key}进行排序 数据表{$tableName}不存在{$key}字段");
+                    }
+                    $model->order($key, $orderBy);
                 }
-                $model->order($key, $orderBy);
             }
-        }
 
-        if ($groupBys) {
-            foreach ($groupBys as $key => $groupBy) {
-                $model->group($groupBy);
+            if ($groupBys) {
+                foreach ($groupBys as $key => $groupBy) {
+                    $model->group($groupBy);
+                }
             }
-        }
 
-        /** 对于$field单独处理 */
-        foreach ($fields as $key => $field) {
-            if (strpos($field, '`') === false) {
-                $fields[$key] = "`{$field}`";
+            /** 对于$field单独处理 */
+            foreach ($fields as $key => $field) {
+                if (strpos($field, '`') === false) {
+                    $fields[$key] = "`{$field}`";
+                }
             }
+
+            $list = $model->field($fields)->withTotalCount()->all($where);
+            $total = $model->lastQueryResult()->getTotalCount();
+
+            return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
-
-        $list = $model->field($fields)->withTotalCount()->all($where);
-        $total = $model->lastQueryResult()->getTotalCount();
-
-        return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
     }
 
     public function switch(array $ids, string $column, string $switchRule): int
     {
-        $model = $this->model::create();
-        $tableName = $model->getTableName();
+        try {
+            $model = $this->model::create();
+            $tableName = $model->getTableName();
 
-        /** 如果该字段在表中不存在 就报错 */
-        $isExist = \Es3\Utility\Model::columnIsExist($model, $column);
-        if (!$isExist) {
-            throw new WaringException(1063, "无法按{$column}进行切换状态 数据表{$tableName}不存在{$column}字段");
+            /** 如果该字段在表中不存在 就报错 */
+            $isExist = \Es3\Utility\Model::columnIsExist($model, $column);
+            if (!$isExist) {
+                throw new WaringException(1063, "无法按{$column}进行切换状态 数据表{$tableName}不存在{$column}字段");
+            }
+
+            return $this->update([$column => $switchRule], $ids);
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
-
-        return $this->update([$column => $switchRule], $ids);
     }
 
     public function truncate(): void
     {
-        $schemaInfo = $this->model->schemaInfo();
-        $this->model = $this->model::create();
-        $this->model->query((new QueryBuilder())->raw('TRUNCATE TABLE ' . $schemaInfo->getTable()));
+        try {
+            $schemaInfo = $this->model->schemaInfo();
+            $this->model = $this->model::create();
+            $this->model->query((new QueryBuilder())->raw('TRUNCATE TABLE ' . $schemaInfo->getTable()));
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+        }
     }
 
     public function insertAll(array $data, ?string $column = ''): array
     {
-        /** 当前是否开启事物 */
-        $this->model = $this->model::create();
+        try {
+            /** 当前是否开启事物 */
+            $this->model = $this->model::create();
 
-        foreach ($data as $key => $val) {
-            $val = $this->model->autoCreateUser($val);
-            $data[$key] = $val;
+            foreach ($data as $key => $val) {
+                $val = $this->model->autoCreateUser($val);
+                $data[$key] = $val;
+            }
+
+            $result = $this->model->insertAll($data, $column);
+
+            return $result;
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
-
-        $result = $this->model->insertAll($data, $column);
-
-        return $result;
     }
 
     /**
@@ -265,31 +328,35 @@ trait Dao
 
             return $list;
         } catch (\Throwable $throwable) {
-
-            $trace = $throwable->getTrace()[2] ?? null;
-            Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $trace['file'] ?? null . $trace['function'] ?? null);
-            Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $trace['line'] ?? null);
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
             throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
 
     public function exec(string $sql, ?array $param = [], bool $raw = true, string $connection = 'default'): array
     {
-        $queryBuild = new QueryBuilder();
-        // 支持参数绑定 第二个参数非必传
-        $queryBuild->raw($sql, $param);
+        try {
+            $queryBuild = new QueryBuilder();
+            // 支持参数绑定 第二个参数非必传
+            $queryBuild->raw($sql, $param);
 
-        // 第二个参数 raw  指定true，表示执行原生sql
-        // 第三个参数 connectionName 指定使用的连接名，默认 default
-        $results = DbManager::getInstance()->query($queryBuild, $raw, $connection);
+            // 第二个参数 raw  指定true，表示执行原生sql
+            // 第三个参数 connectionName 指定使用的连接名，默认 default
+            $results = DbManager::getInstance()->query($queryBuild, $raw, $connection);
 
-        $lastErrorNo = $results->getLastErrorNo();
-        $lastError = $results->getLastError();
+            $lastErrorNo = $results->getLastErrorNo();
+            $lastError = $results->getLastError();
 
-        if ($lastErrorNo !== 0) {
-            throw new ErrorException(1011, $lastError);
+            if ($lastErrorNo !== 0) {
+                throw new ErrorException(1011, $lastError);
+            }
+
+            return [ResultConst::RESULT_AFFECTED_ROWS_KEY => $results->getAffectedRows(), ResultConst::RESULT_LAST_INSERT_ID_KEY => $results->getLastInsertId()];
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
-
-        return [ResultConst::RESULT_AFFECTED_ROWS_KEY => $results->getAffectedRows(), ResultConst::RESULT_LAST_INSERT_ID_KEY => $results->getLastInsertId()];
     }
 }
