@@ -122,10 +122,7 @@ trait Dao
 
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
-
             setResultFile($throwable, 1);
-
-            $msg = $throwable->getMessage() . "file:{$file} line:{$line}";
             throw new ErrorException($throwable->getCode(), $msg);
         }
     }
