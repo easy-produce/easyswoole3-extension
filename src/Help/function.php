@@ -77,12 +77,11 @@ function clientIp(): ?string
         return null;
     }
     // 优先在x-forwarded-for获取
-    $xForwardedFor = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->connection_info($request->getSwooleRequest()->fd)['x-forwarded-for'] ?? null;
-    $xForwardedFor = '';
+    $xForwardedFor = headers()['x-forwarded-for'] ?? null;
     $ip = current(explode(',', $xForwardedFor)) ?? null;
 
     if (!$ip) {
-        $ip = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->connection_info($request->getSwooleRequest()->fd)['remote_ip'] ?? null;
+        $ip = headers()['remote_ip'] ?? null;
     }
 
     // 最后获取 remote_ip 需要在nginx转过来

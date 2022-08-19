@@ -52,7 +52,7 @@ class Middleware
         $headers = 'Content-Type, Authorization, X-Requested-With, token, identity';
         $allowAccessControl = AppConst::HEADER_ALLOW_ACCESS_CONTROL;
         if (!superEmpty($allowAccessControl)) {
-            $headers = $headers . ' , ' . implode($allowAccessControl, ' , ');
+            $headers = $headers . ' , ' . implode(' , ', $allowAccessControl);
         }
 
         /** 生产情况的跨域 由 运维处理 */
