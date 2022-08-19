@@ -42,9 +42,10 @@ class Json
     public static function fail(\Throwable $throwable, int $code = ResultConst::FAIL_CODE, string $msg = ResultConst::FAIL_MSG): void
     {
         Di::getInstance()->get(AppConst::DI_RESULT)->setTrace($throwable->getTrace());
-//        Di::getInstance()->get(AppConst::DI_RESULT)->setFile($throwable->getFile());
-//        Di::getInstance()->get(AppConst::DI_RESULT)->setLine($throwable->getLine());
-
+        if (isHttp()) {
+            Di::getInstance()->get(AppConst::DI_RESULT)->setFile($throwable->getFile());
+            Di::getInstance()->get(AppConst::DI_RESULT)->setLine($throwable->getLine());
+        }
         Json::setBody($code, $msg, false);
     }
 
@@ -68,8 +69,8 @@ class Json
         $result->setMsg(strval($msg));
         $result->setCode(intval($code));
 
-        $result->setFile(Di::getInstance()->get(\Es3\Constant\ResultConst::FILE_KEY));
-        $result->setLine(Di::getInstance()->get(\Es3\Constant\ResultConst::LINE_KEY));
+//        $result->setFile(Di::getInstance()->get(\Es3\Constant\ResultConst::FILE_KEY));
+//        $result->setLine(Di::getInstance()->get(\Es3\Constant\ResultConst::LINE_KEY));
 
         $data = $result->toArray();
 
