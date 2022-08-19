@@ -123,7 +123,7 @@ trait Dao
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
             setResultFile($throwable, 1);
-            throw new ErrorException($throwable->getCode(), $msg);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
 
