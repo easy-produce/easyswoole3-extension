@@ -69,6 +69,6 @@ class Policy
             $isSign = false;
         }
 
-        return !$isSign;
+        return $isSign;
     }
 }

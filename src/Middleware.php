@@ -126,6 +126,12 @@ class Middleware
             return null;
         }
 
+        // 没有开启校验返回成功
+        $isSign = \Es3\Policy::getInstance()->isSign();
+        if (!$isSign) {
+            return true;
+        }
+
         /** 是否开启校验 */
         $isVerify = config("sign.verify", true);
         if (!$isVerify) {
@@ -136,6 +142,7 @@ class Middleware
         if (!$isVerify) {
             return null;
         }
+
 
         /** API签名校验 */
         $ref = new \ReflectionClass($nameSpace);
