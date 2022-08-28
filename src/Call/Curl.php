@@ -134,7 +134,7 @@ class Curl extends HttpClient
                 Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
             }
 
-            $msg = $throwable->getMessage() . "file:{$file} line:{$line}";
+            $msg = $throwable->getMessage() . "file:{$throwable->getFile()} line:{$throwable->getLine()}";
             throw new ErrorException($throwable->getCode(), $msg);
         }
     }
