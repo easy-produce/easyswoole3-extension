@@ -3,6 +3,8 @@
 namespace Es3\Handle;
 
 use App\Constant\EnvConst;
+use App\Module\Callback\Service\TaskService;
+use EasySwoole\EasySwoole\Task\TaskManager;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
 use Es3\Log\LogBean;
@@ -39,59 +41,73 @@ class LoggerHandel implements LoggerInterface
      */
     function log(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'debug'): string
     {
-        // 对日志赋值
-        $logbean = new LogBean();
-        // 设置日志等级
-        $logbean->setLevel(strtolower($this->levelMap($logLevel)));
-        // 设置日志分类
-        $logbean->setCategory($category);
-        // 设置日志内容
-        $logbean->setMsg($msg);
+        $function = function () use ($msg, $logLevel, $category) {
 
-        $logbean->setFile($this->file);
-        $logbean->setLine($this->line);
-        $logbean->setTrace($this->trace);
+            // 对日志赋值
+            $logbean = new LogBean();
+            // 设置日志等级
+            $logbean->setLevel(strtolower($this->levelMap($logLevel)));
+            // 设置日志分类
+            $logbean->setCategory($category);
+            // 设置日志内容
+            $logbean->setMsg($msg);
 
-        $date = date('Y-m-d H:i:s');
-        $category = strtolower($category);
-        $project = strtolower(EnvConst::SERVICE_NAME);
-        $levelStr = strtolower($this->levelMap($logLevel));
-        $logPath = "{$this->logDir}/{$category}/{$levelStr}";
+            $logbean->setFile($this->file);
+            $logbean->setLine($this->line);
+            $logbean->setTrace($this->trace);
 
-        clearstatcache();
-        is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
+            $date = date('Y-m-d H:i:s');
+            $category = strtolower($category);
+            $project = strtolower(EnvConst::SERVICE_NAME);
+            $levelStr = strtolower($this->levelMap($logLevel));
+            $logPath = "{$this->logDir}/{$category}/{$levelStr}";
 
-        $fileDate = date('Ymd', time());
-        $filePath = "{$logPath}/{$fileDate}.log";
+            clearstatcache();
+            is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
 
-        /** 是否传递分类的特殊处理 */
-        $traceCode = Trace::getRequestId();
+            $fileDate = date('Ymd', time());
+            $filePath = "{$logPath}/{$fileDate}.log";
 
-        // 通过日志分类截取日志负责人
-        $categoryLen = mb_strlen($category);
-        $leaderName = null;
+            /** 是否传递分类的特殊处理 */
+            $traceCode = Trace::getRequestId();
+
+            // 通过日志分类截取日志负责人
+            $categoryLen = mb_strlen($category);
+            $leaderName = null;
 //        if (strpos($category, '_') && $categoryLen > 3) {
 //            $leaderName = explode('_', $category);
 //            $leaderName = current($leaderName) ?? null;
 //        }
 
-        if (strpos($category, '-') && $categoryLen > 3) {
-            $leaderName = explode('-', $category);
-            $leaderName = current($leaderName) ?? null;
-        }
+            if (strpos($category, '-') && $categoryLen > 3) {
+                $leaderName = explode('-', $category);
+                $leaderName = current($leaderName) ?? null;
+            }
 
-        // 设置负责人名称
-        $logbean->setLeaderName($leaderName);
+            // 设置负责人名称
+            $logbean->setLeaderName($leaderName);
 
 //        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
-        $str = jsonEncode($logbean->toArray()) . "\n";
+            $str = jsonEncode($logbean->toArray()) . "\n";
 
-        file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
-        return $str;
+            file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
+        };
+
+        if (isHttp()) {
+            TaskManager::getInstance()->async($function);
+        } else {
+            $function();
+        }
+
+        return '';
     }
 
     function console(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'console')
     {
+        if (isProduction()) {
+            return;
+        }
+
         $date = date('Y-m-d H:i:s');
         $levelStr = $this->levelMap($logLevel);
         $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";
