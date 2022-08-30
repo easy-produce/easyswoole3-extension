@@ -41,20 +41,22 @@ class LoggerHandel implements LoggerInterface
      */
     function log(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'debug'): string
     {
-        $function = function () use ($msg, $logLevel, $category) {
+        // 对日志赋值
+        $logbean = new LogBean();
+        // 设置日志等级
+        $logbean->setLevel(strtolower($this->levelMap($logLevel)));
+        // 设置日志分类
+        $logbean->setCategory($category);
+        // 设置日志内容
+        $logbean->setMsg($msg);
+        $logbean->setFile($this->file);
+        $logbean->setLine($this->line);
+        $logbean->setTrace($this->trace);
 
-            // 对日志赋值
-            $logbean = new LogBean();
-            // 设置日志等级
-            $logbean->setLevel(strtolower($this->levelMap($logLevel)));
-            // 设置日志分类
-            $logbean->setCategory($category);
-            // 设置日志内容
-            $logbean->setMsg($msg);
+//        $traceCode = Trace::getRequestId();
 
-            $logbean->setFile($this->file);
-            $logbean->setLine($this->line);
-            $logbean->setTrace($this->trace);
+        // 转入闭包
+        $function = function () use ($logbean, $category, $logLevel) {
 
             $date = date('Y-m-d H:i:s');
             $category = strtolower($category);
@@ -68,16 +70,10 @@ class LoggerHandel implements LoggerInterface
             $fileDate = date('Ymd', time());
             $filePath = "{$logPath}/{$fileDate}.log";
 
-            /** 是否传递分类的特殊处理 */
-            $traceCode = Trace::getRequestId();
 
             // 通过日志分类截取日志负责人
             $categoryLen = mb_strlen($category);
             $leaderName = null;
-//        if (strpos($category, '_') && $categoryLen > 3) {
-//            $leaderName = explode('_', $category);
-//            $leaderName = current($leaderName) ?? null;
-//        }
 
             if (strpos($category, '-') && $categoryLen > 3) {
                 $leaderName = explode('-', $category);
@@ -87,12 +83,11 @@ class LoggerHandel implements LoggerInterface
             // 设置负责人名称
             $logbean->setLeaderName($leaderName);
 
-//        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
             $str = jsonEncode($logbean->toArray()) . "\n";
-
             file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
         };
 
+        // 转异步处理
         if (isHttp()) {
             TaskManager::getInstance()->async($function);
         } else {
