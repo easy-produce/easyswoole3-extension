@@ -94,9 +94,9 @@ class LoggerHandel implements LoggerInterface
         };
 
         if (isHttp()) {
-            TaskManager::getInstance()->async($function);
-        } else {
             $function();
+        } else {
+            TaskManager::getInstance()->async($function);
         }
 
         return '';
