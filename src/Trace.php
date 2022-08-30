@@ -25,7 +25,6 @@ class Trace
         if (!Di::getInstance()->get(AppConst::DI_TRACE_CODE)) {
             Trace::createRequestId();
         }
-
         return Di::getInstance()->get(AppConst::DI_TRACE_CODE);
     }
 
