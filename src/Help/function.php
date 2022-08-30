@@ -249,5 +249,6 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
 
         Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $file);
         Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
+        Di::getInstance()->set(\Es3\Constant\ResultConst::TRACE_KEY, $throwable->getTraceAsString());
     }
 }

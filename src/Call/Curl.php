@@ -120,22 +120,13 @@ class Curl extends HttpClient
             }
 
             if ($errCode !== 0) {
-                throw new ErrorException(1021, '远程网络异常:' . $response->getErrMsg());
+                throw new ErrorException(1021, "访问远程网络 {$this->url} , 出现{$response->getErrMsg()}错误,请联系管理员反馈处理");
             }
 
         } catch (\Throwable $throwable) {
 
-            if(isHttp()){
-                $trace = $throwable->getTrace()[2] ?? null;
-                $file = $trace['file'] ?? null . $trace['function'] ?? null;
-                $line = $trace['line'] ?? null;
-
-                Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $file);
-                Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
-            }
-
-            $msg = $throwable->getMessage() . "file:{$throwable->getFile()} line:{$throwable->getLine()}";
-            throw new ErrorException($throwable->getCode(), $msg);
+            setResultFile($throwable, 2);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
 
@@ -149,10 +140,7 @@ class Curl extends HttpClient
 
         } catch (\Throwable $throwable) {
 
-            $trace = $throwable->getTrace()[2] ?? null;
-            Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $trace['file'] ?? null . $trace['function'] ?? null);
-            Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $trace['line'] ?? null);
-
+            setResultFile($throwable, 2);
             throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }

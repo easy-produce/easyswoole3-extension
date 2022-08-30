@@ -90,7 +90,7 @@ class LoggerHandel implements LoggerInterface
 //        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
             $str = jsonEncode($logbean->toArray()) . "\n";
 
-            file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
+            file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
         };
 
         if (isHttp()) {
@@ -111,7 +111,7 @@ class LoggerHandel implements LoggerInterface
         $date = date('Y-m-d H:i:s');
         $levelStr = $this->levelMap($logLevel);
         $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";
-        fwrite(STDOUT, $temp);
+        fwrite(STDOUT, stripslashes($temp));
     }
 
     private function levelMap(int $level): string
