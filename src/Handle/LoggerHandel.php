@@ -55,39 +55,37 @@ class LoggerHandel implements LoggerInterface
 
 //        $traceCode = Trace::getRequestId();
 
-        // 转入闭包
-        $function = function () use ($logbean, $category, $logLevel) {
+        $date = date('Y-m-d H:i:s');
+        $category = strtolower($category);
+        $project = strtolower(EnvConst::SERVICE_NAME);
+        $levelStr = strtolower($this->levelMap($logLevel));
+        $logPath = "{$this->logDir}/{$category}/{$levelStr}";
 
-            $date = date('Y-m-d H:i:s');
-            $category = strtolower($category);
-            $project = strtolower(EnvConst::SERVICE_NAME);
-            $levelStr = strtolower($this->levelMap($logLevel));
-            $logPath = "{$this->logDir}/{$category}/{$levelStr}";
+        clearstatcache();
+        is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
 
-            clearstatcache();
-            is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
-
-            $fileDate = date('Ymd', time());
-            $filePath = "{$logPath}/{$fileDate}.log";
+        $fileDate = date('Ymd', time());
+        $filePath = "{$logPath}/{$fileDate}.log";
 
 
-            // 通过日志分类截取日志负责人
-            $categoryLen = mb_strlen($category);
-            $leaderName = null;
+        // 通过日志分类截取日志负责人
+        $categoryLen = mb_strlen($category);
+        $leaderName = null;
 
-            if (strpos($category, '-') && $categoryLen > 3) {
-                $leaderName = explode('-', $category);
-                $leaderName = current($leaderName) ?? null;
-            }
+        if (strpos($category, '-') && $categoryLen > 3) {
+            $leaderName = explode('-', $category);
+            $leaderName = current($leaderName) ?? null;
+        }
 
-            // 设置负责人名称
-            $logbean->setLeaderName($leaderName);
+        // 设置负责人名称
+        $logbean->setLeaderName($leaderName);
+        $str = jsonEncode($logbean->toArray()) . "\n";
 
-            $str = jsonEncode($logbean->toArray()) . "\n";
+        // 转异步处理
+        $function = function () use ($filePath, $str) {
             file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
         };
 
-        // 转异步处理
         if (isHttp()) {
             TaskManager::getInstance()->async($function);
         } else {
