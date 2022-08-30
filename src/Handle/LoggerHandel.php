@@ -91,7 +91,6 @@ class LoggerHandel implements LoggerInterface
         } else {
             $function();
         }
-
         return '';
     }
 
