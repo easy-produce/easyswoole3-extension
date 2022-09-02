@@ -63,14 +63,12 @@ class Json
         $result = Di::getInstance()->get(AppConst::DI_RESULT);
 
         /** 返回数据定制*/
-        $code = $isSuccess ? (empty($code) ? ResultConst::SUCCES_CODE : $code) : (empty($code) ? 0 : $code);
+        $code = $isSuccess ? (empty($code) ? ResultConst::SUCCESS_CODE : $code) : (empty($code) ? 0 : $code);
 
         /** 写入返回信息 */
         $result->setMsg(strval($msg));
         $result->setCode(intval($code));
 
-//        $result->setFile(Di::getInstance()->get(\Es3\Constant\ResultConst::FILE_KEY));
-//        $result->setLine(Di::getInstance()->get(\Es3\Constant\ResultConst::LINE_KEY));
 
         $data = $result->toArray();
 
