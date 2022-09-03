@@ -83,7 +83,7 @@ class LoggerHandel implements LoggerInterface
 
         // 转异步处理
         $function = function () use ($filePath, $str) {
-            file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
+            file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
         };
 
         if (isHttp()) {
