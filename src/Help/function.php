@@ -1,5 +1,6 @@
 <?php
 
+use App\Constant\EnvConst;
 use App\Constant\AppConst;
 use EasySwoole\Component\Di;
 use EasySwoole\Http\Request;
@@ -251,4 +252,18 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
         Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
         Di::getInstance()->set(\Es3\Constant\ResultConst::TRACE_KEY, $throwable->getTraceAsString());
     }
+}
+/**
+ * 当前是否跑在主项目上 包含自定义进程和定时任务
+ */
+function isMaster()
+{
+    $ref = new \ReflectionClass(EnvConst::class);
+    $serverType = $ref->getConstant('SERVER_TYPE');
+
+    if ($serverType == 'SLAVE') {
+        return false;
+    }
+
+    return true;
 }

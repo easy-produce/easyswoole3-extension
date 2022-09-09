@@ -105,7 +105,7 @@ class Result
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
             ResultConst::MSG_KEY => $this->_msg,
-            'file' => strstr($this->_file, "/App/"),
+            'file' => str_replace($this->_file, '', EASYSWOOLE_ROOT),
             'line' => $this->_line,
 //            ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
