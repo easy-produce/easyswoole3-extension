@@ -17,6 +17,12 @@ class Crontab
 
     public function autoLoad()
     {
+        if (!isMaster()) {
+            echo Utility::displayItem('Crontab', '当前环境为SLAVE 不会执行定时任务');
+            echo "\n";
+            return;
+        }
+
         try {
             $crontabLoads = [];
             $path = EASYSWOOLE_ROOT . '/' . EsConst::ES_DIRECTORY_APP_NAME . '/' . EsConst::ES_DIRECTORY_MODULE_NAME . '/';

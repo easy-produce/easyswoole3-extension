@@ -16,6 +16,12 @@ class Queue
 
     public function autoLoad()
     {
+        if (!isMaster()) {
+            echo Utility::displayItem('Crontab', '当前环境为SLAVE 不会执行消息队列');
+            echo "\n";
+            return;
+        }
+
         try {
             $crontabLoads = [];
             $path = EASYSWOOLE_ROOT . '/' . EsConst::ES_DIRECTORY_APP_NAME . '/' . EsConst::ES_DIRECTORY_MODULE_NAME . '/';

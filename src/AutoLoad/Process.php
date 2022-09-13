@@ -17,6 +17,12 @@ class Process
     public function autoLoad()
     {
         try {
+            if (!isMaster()) {
+                echo Utility::displayItem('Crontab', '当前环境为SLAVE 不会执行自定义进程');
+                echo "\n";
+                return;
+            }
+
             $crontabLoads = [];
             $path = EASYSWOOLE_ROOT . '/' . EsConst::ES_DIRECTORY_APP_NAME . '/' . EsConst::ES_DIRECTORY_MODULE_NAME . '/';
             $modules = EsUtility::sancDir($path);
