@@ -86,13 +86,13 @@ class LoggerHandel implements LoggerInterface
 //        file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
 //        });
 
-        if (isHttp()) {
-            TaskManager::getInstance()->async(function ($filePath, $str) {
-                file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
-            });
-        } else {
-            file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
-        }
+//        if (isHttp()) {
+//            TaskManager::getInstance()->async(function ($filePath, $str) {
+//                file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
+//            });
+//        } else {
+        file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
+//        }
         return '';
     }
 
