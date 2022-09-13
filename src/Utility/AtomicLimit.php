@@ -50,7 +50,8 @@ class AtomicLimit
         }
 
         /** @var \EasySwoole\AtomicLimit\AtomicLimit $limit */
-        $limit = ContextManager::getInstance()->get(AppConst::DI_AUTO_LIMITER);
+//        $limit = ContextManager::getInstance()->get(AppConst::DI_AUTO_LIMITER);
+        $limit = Di::getInstance()->get(AppConst::DI_AUTO_LIMITER);;
         $isAstrict = !($limit->access($uri, $qps));
 
         if ($isAstrict) {
