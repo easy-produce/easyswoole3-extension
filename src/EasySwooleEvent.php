@@ -11,6 +11,7 @@ use App\Module\Callback\Queue\TaskFailQueue;
 use App\Module\Callback\Queue\TaskInvalidQueue;
 use App\Rpc\Oms;
 use EasySwoole\AtomicLimit\AtomicLimit;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\Console\Console;
 use EasySwoole\EasySwoole\Command\Utility;
@@ -109,6 +110,12 @@ class EasySwooleEvent
     {
     }
 
+    /**
+     * @throws \EasySwoole\Component\Process\Exception
+     * @throws \EasySwoole\RedisPool\Exception\Exception
+     * @throws \Es3\Exception\ErrorException
+     * @throws \EasySwoole\RedisPool\RedisPoolException
+     */
     public static function mainServerCreate(EventRegister $register): void
     {
         /** 初始化定时任务 */
@@ -118,11 +125,14 @@ class EasySwooleEvent
         \Es3\AutoLoad\Process::getInstance()->autoLoad();
 
         /** 策略加载 */
-        Di::getInstance()->set(AppConst::POLICY_CONF_IS_AUTH, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_AUTH));
+//        Di::getInstance()->set(AppConst::POLICY_CONF_IS_AUTH, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_AUTH));
+        /** 策略加载 */
+        Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_AUTH);
 
         $policyConfIsSign = (new \ReflectionClass(AppConst::class))->getConstant('POLICY_CONF_IS_SIGN');
         if ($policyConfIsSign) {
-            Di::getInstance()->set(AppConst::POLICY_CONF_IS_SIGN, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN));
+//            Di::getInstance()->set(AppConst::POLICY_CONF_IS_SIGN, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN));
+            Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN);
         }
 
         /** smarty */
@@ -185,11 +195,19 @@ class EasySwooleEvent
         \Es3\AutoLoad\AtomicLimit::getInstance()->autoLoad();
     }
 
+    /**
+     * @throws \EasySwoole\Component\Context\Exception\ModifyError
+     */
     public static function onRequest(Request $request, Response $response)
     {
-        Di::getInstance()->set(AppConst::DI_RESULT, Result::class);
-        Di::getInstance()->set(AppConst::DI_REQUEST, $request);
-        Di::getInstance()->set(AppConst::DI_RESPONSE, $response);
+//        Di::getInstance()->set(AppConst::DI_RESULT, Result::class);
+        ContextManager::getInstance()->set(AppConst::DI_RESULT, new Result());
+
+//        Di::getInstance()->set(AppConst::DI_REQUEST, $request);
+        ContextManager::getInstance()->set(AppConst::DI_REQUEST, $request);
+
+//        Di::getInstance()->set(AppConst::DI_RESPONSE, $response);
+        ContextManager::getInstance()->set(AppConst::DI_RESPONSE, $response);
 
         /** 请求唯一标识  */
         Trace::createRequestId();

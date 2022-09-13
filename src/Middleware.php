@@ -127,7 +127,7 @@ class Middleware
         }
 
         // 没有开启校验返回成功
-        $isSign = \Es3\Policy::getInstance()->isSign();
+        $isSign = \Es3\Policy::getInstance()->check(AppConst::POLICY_CONF_IS_SIGN);
         if (!$isSign) {
             return true;
         }

@@ -4,6 +4,7 @@ namespace Es3;
 
 use App\Constant\AppConst;
 use App\Constant\ResultConst;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Config;
@@ -19,20 +20,23 @@ class Trace
 {
     /**
      * @return mixed
+     * @throws \EasySwoole\Component\Context\Exception\ModifyError
+     * @throws \Throwable
      */
     public static function getRequestId()
     {
-        if (!Di::getInstance()->get(AppConst::DI_TRACE_CODE)) {
+        if (!ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE)) {
             Trace::createRequestId();
         }
-        return Di::getInstance()->get(AppConst::DI_TRACE_CODE);
+        return ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE);
     }
 
     /**
-     * @param mixed $requestId
+     * @throws \EasySwoole\Component\Context\Exception\ModifyError
      */
     public static function createRequestId(): void
     {
-        Di::getInstance()->set(AppConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
+//        Di::getInstance()->set(AppConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
+        ContextManager::getInstance()->set(AppConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
     }
 }

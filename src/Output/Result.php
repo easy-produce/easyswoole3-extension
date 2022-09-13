@@ -4,6 +4,7 @@ namespace Es3\Output;
 
 use App\Constant\AppConst;
 use App\Constant\ResultConst;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use Es3\EsConfig;
 
@@ -105,11 +106,11 @@ class Result
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
             ResultConst::MSG_KEY => $this->_msg,
-            'file' => str_replace($this->_file, '', EASYSWOOLE_ROOT),
+            'file' => str_replace(EASYSWOOLE_ROOT, '', $this->_file),
             'line' => $this->_line,
 //            ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
-            AppConst::DI_TRACE_CODE => Di::getInstance()->get(AppConst::DI_TRACE_CODE),
+            AppConst::DI_TRACE_CODE => ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE),
         ];
 
         // 不是生产环境增加追踪机制
@@ -117,9 +118,9 @@ class Result
             $data['trace'] = $this->_trace;
         }
 
-        if (empty($this->_result)) {
-            unset($data['data']);
-        }
+//        if (empty($this->_result)) {
+//            unset($data['data']);
+//        }
 
         return $data;
     }

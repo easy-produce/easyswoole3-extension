@@ -7,6 +7,7 @@ use App\Constant\PageConst;
 use App\Constant\ResultConst;
 use App\Module\Owtb\Model\DepotModel;
 use EasySwoole\AtomicLimit\AtomicLimit;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Core;
 use EasySwoole\Http\AbstractInterface\Controller;
@@ -36,7 +37,7 @@ class BaseController extends Controller
     function get()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取参数 */
         $params = $this->getParams();
@@ -56,7 +57,7 @@ class BaseController extends Controller
     function index()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取分页参数  */
         $page = $this->getPage();
@@ -82,7 +83,8 @@ class BaseController extends Controller
     function delete()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+//        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取参数 参数调整 */
         $params = $this->getParams();
@@ -109,7 +111,7 @@ class BaseController extends Controller
     function batchDelete()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取参数 参数调整 */
         $params = $this->getParams();
@@ -129,7 +131,7 @@ class BaseController extends Controller
     function update()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取参数 参数调整 */
         $params = $this->getParams();
@@ -154,7 +156,7 @@ class BaseController extends Controller
     function save()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取所有参数 */
         $params = $this->getParams();
@@ -173,7 +175,7 @@ class BaseController extends Controller
     function batchUpdate()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取参数 参数调整 */
         $params = $this->getParams();
@@ -198,7 +200,7 @@ class BaseController extends Controller
     function group()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取分页参数  */
         $page = $this->getPage();
@@ -227,7 +229,7 @@ class BaseController extends Controller
     public function switch()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取参数 */
         $params = $this->getParams();
@@ -253,7 +255,7 @@ class BaseController extends Controller
     public function option()
     {
         /** @var $result Result */
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 获取分页参数  */
         $page = $this->getPage();

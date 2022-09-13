@@ -5,6 +5,7 @@ namespace Es3\Log;
 use App\Constant\AppConst;
 use App\Constant\EnvConst;
 use App\Constant\LoggerConst;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\Http\Request;
 use EasySwoole\LinuxDash\LinuxDash;
@@ -57,7 +58,8 @@ class LogBean extends \EasySwoole\Spl\SplBean
         // 设置调用堆栈
 //        $this->setTrace(Di::getInstance()->get(ResultConst::TRACE_KEY));
         // 设置
-        $this->setResponse(Di::getInstance()->get(\Es3\Constant\ResultConst::RESPONSE_KEY));
+//        $this->setResponse(Di::getInstance()->get(\Es3\Constant\ResultConst::RESPONSE_KEY));
+        $this->setResponse(ContextManager::getInstance()->get(\Es3\Constant\ResultConst::RESPONSE_KEY));
         // 在日志中写入自定义参数 限制100个字符
         $this->setExtend(getLogExtend());
         // 设置创建人、创建id
@@ -72,7 +74,9 @@ class LogBean extends \EasySwoole\Spl\SplBean
 
         // 运行时间计算
         /** 从请求里获取之前增加的时间戳 */
-        $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+//        $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+        $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
+
         if ($request instanceof Request) {
             $reqTime = $request->getAttribute(LoggerConst::LOG_NAME_ACCESS);
             $runTime = round(microtime(true) - $reqTime, 5);

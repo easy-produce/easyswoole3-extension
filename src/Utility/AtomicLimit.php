@@ -4,6 +4,7 @@ namespace Es3\Utility;
 
 
 use App\Constant\AppConst;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\Component\Singleton;
 use EasySwoole\Http\Request;
@@ -28,7 +29,15 @@ class AtomicLimit
             return;
         }
 
-        /** 获取配置 */
+        /** 兼容没有常量的项目 */
+        if (!(new \ReflectionClass(AppConst::class))->getConstant('POLICY_CONF_ATOMIC_LIMIT_URL')) {
+            return;
+        }
+
+        if (!(new \ReflectionClass(AppConst::class))->getConstant('DI_AUTO_LIMITER')) {
+            return;
+        }
+
         $configKey = AppConst::POLICY_CONF_ATOMIC_LIMIT_URL;
         $atomicLimitConfig = config("policy.{$configKey}", true);
 
@@ -41,7 +50,7 @@ class AtomicLimit
         }
 
         /** @var \EasySwoole\AtomicLimit\AtomicLimit $limit */
-        $limit = Di::getInstance()->get(AppConst::DI_AUTO_LIMITER);
+        $limit = ContextManager::getInstance()->get(AppConst::DI_AUTO_LIMITER);
         $isAstrict = !($limit->access($uri, $qps));
 
         if ($isAstrict) {

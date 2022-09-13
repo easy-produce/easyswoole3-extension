@@ -13,6 +13,7 @@ use Es3\Output\Json;
 use EasySwoole\Log\LoggerInterface;
 use Es3\Trace;
 use Es3\Utility\File;
+use Swoole\Coroutine;
 
 class LoggerHandel implements LoggerInterface
 {
@@ -81,15 +82,16 @@ class LoggerHandel implements LoggerInterface
         $logbean->setLeaderName($leaderName);
         $str = jsonEncode($logbean->toArray()) . "\n";
 
-        // 转异步处理
-        $function = function () use ($filePath, $str) {
-            file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
-        };
+//        Coroutine::create(function () use ($filePath, $str) {
+//        file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
+//        });
 
         if (isHttp()) {
-            TaskManager::getInstance()->async($function);
+            TaskManager::getInstance()->async(function ($filePath, $str) {
+                file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
+            });
         } else {
-            $function();
+            file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
         }
         return '';
     }

@@ -8,6 +8,7 @@ use App\Constant\LoggerConst;
 use App\Constant\ResultConst;
 use AsaEs\AsaEsConst;
 use AsaEs\Logger\FileLogger;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Config;
 use EasySwoole\Component\Di;
 use EasySwoole\Core\Swoole\Task\TaskManager;
@@ -21,46 +22,46 @@ class Json
 {
     /**
      * HTTP 返回成功
-     * @param Response $response
-     * @param \Es3\Output\Result $result
      * @param int $code
      * @param string $msg
+     * @throws \Throwable
      */
     public static function success(int $code = ResultConst::SUCCESS_CODE, string $msg = ResultConst::SUCCESS_MSG): void
     {
-        Di::getInstance()->get(AppConst::DI_RESULT)->setTrace(debug_backtrace());
+        ContextManager::getInstance()->get(AppConst::DI_RESULT)->setTrace(debug_backtrace());
         Json::setBody($code, $msg, true);
     }
 
     /**
      * HTTP 返回失败
-     * @param Response $response
-     * @param Results $results
+     * @param \Throwable $throwable
      * @param int $code
      * @param string $msg
+     * @throws \Throwable
      */
     public static function fail(\Throwable $throwable, int $code = ResultConst::FAIL_CODE, string $msg = ResultConst::FAIL_MSG): void
     {
-        Di::getInstance()->get(AppConst::DI_RESULT)->setTrace($throwable->getTrace());
+        ContextManager::getInstance()->get(AppConst::DI_RESULT)->setTrace($throwable->getTrace());
         if (isHttp()) {
-            Di::getInstance()->get(AppConst::DI_RESULT)->setFile($throwable->getFile());
-            Di::getInstance()->get(AppConst::DI_RESULT)->setLine($throwable->getLine());
+            ContextManager::getInstance()->get(AppConst::DI_RESULT)->setFile($throwable->getFile());
+            ContextManager::getInstance()->get(AppConst::DI_RESULT)->setLine($throwable->getLine());
         }
         Json::setBody($code, $msg, false);
     }
 
     /**
      * HTTP 返回结构
-     * @param Response $response
-     * @param \Es3\Output\Result $result
      * @param int $code
      * @param string $msg
-     * @param $isSuccess
+     * @param bool $isSuccess
+     * @throws \Throwable
      */
     private static function setBody(int $code, string $msg = '', bool $isSuccess): void
     {
-        $response = Di::getInstance()->get(AppConst::DI_RESPONSE);
-        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+//        $response = Di::getInstance()->get(AppConst::DI_RESPONSE);
+        $response = ContextManager::getInstance()->get(AppConst::DI_RESPONSE);
+
+        $result = ContextManager::getInstance()->get(AppConst::DI_RESULT);
 
         /** 返回数据定制*/
         $code = $isSuccess ? (empty($code) ? ResultConst::SUCCESS_CODE : $code) : (empty($code) ? 0 : $code);
@@ -69,11 +70,10 @@ class Json
         $result->setMsg(strval($msg));
         $result->setCode(intval($code));
 
-
         $data = $result->toArray();
 
         /** 记录请求log */
-        Di::getInstance()->set(\Es3\Constant\ResultConst::RESPONSE_KEY,
+        ContextManager::getInstance()->set(\Es3\Constant\ResultConst::RESPONSE_KEY,
             ['response_code' => $code, 'response_msg' => $msg, 'http_code' => $response->getStatusCode()]
         );
 

@@ -2,6 +2,7 @@
 
 use App\Constant\EnvConst;
 use App\Constant\AppConst;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\Http\Request;
 use Es3\Trace;
@@ -27,7 +28,8 @@ function config($keyPath = '', $env = false)
 
 function isHttp()
 {
-    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+    $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
+//    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
     if (superEmpty($request)) {
         return false;
     }
@@ -73,7 +75,8 @@ function array_save(array $array, array $keys = []): array
 
 function clientIp(): ?string
 {
-    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+//    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+    $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
     if (!($request instanceof Request)) {
         return null;
     }
@@ -95,7 +98,9 @@ function requestLog(): ?array
         return null;
     }
 
-    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+//    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+    $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
+
 
     $swooleRequest = (array)$request->getSwooleRequest();
     $raw = $request->getBody()->__toString();
@@ -118,16 +123,24 @@ function requestLog(): ?array
 
 }
 
+/**
+ * @throws \EasySwoole\Component\Context\Exception\ModifyError
+ */
 function setIdentity($identity): void
 {
-    Di::getInstance()->set(AppConst::HEADER_AUTH, $identity);
+//    Di::getInstance()->set(AppConst::HEADER_AUTH, $identity);
+    ContextManager::getInstance()->set(AppConst::HEADER_AUTH, $identity);
 }
 
 function identity()
 {
-    return Di::getInstance()->get(AppConst::HEADER_AUTH);
+    return ContextManager::getInstance()->get(AppConst::HEADER_AUTH);
 }
 
+/**
+ * @throws \Es3\Exception\InfoException
+ * @throws \EasySwoole\Component\Context\Exception\ModifyError
+ */
 function setAppCode($appCode): void
 {
     $ref = new \ReflectionClass(AppConst::class);
@@ -137,9 +150,13 @@ function setAppCode($appCode): void
         throw new \Es3\Exception\InfoException(1036, "App\Constant\AppConst常量中缺少 HEADER_APP_CODE 常量");
     }
 
-    Di::getInstance()->set($headerAppCode, $appCode);
+//    Di::getInstance()->set($headerAppCode, $appCode);
+    ContextManager::getInstance()->set($headerAppCode, $appCode);
 }
 
+/**
+ * @throws \Es3\Exception\InfoException
+ */
 function appCode()
 {
     $ref = new \ReflectionClass(AppConst::class);
@@ -149,9 +166,12 @@ function appCode()
         throw new \Es3\Exception\InfoException(1035, "App\Constant\AppConst常量中缺少 HEADER_APP_CODE 常量");
     }
 
-    return Di::getInstance()->get($headerAppCode);
+    return ContextManager::getInstance()->get($headerAppCode);
 }
 
+/**
+ * @throws \Es3\Exception\InfoException
+ */
 function redisKey(string ...$key): string
 {
     if (superEmpty($key)) {
@@ -168,7 +188,9 @@ function headers(): array
         return [];
     }
 
-    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+//    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+    $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
+
     $swooleRequest = (array)$request->getSwooleRequest();
     return $swooleRequest['header'] ?? [];
 }
@@ -225,21 +247,25 @@ function dump($val, bool $isExit = false, bool $showJson = false): void
  */
 function getLogExtend()
 {
-    Di::getInstance()->get(\Es3\Constant\ResultConst::EXTEND_ID_KEY);
+//    Di::getInstance()->get(\Es3\Constant\ResultConst::EXTEND_ID_KEY);
+    return ContextManager::getInstance()->get(\Es3\Constant\ResultConst::EXTEND_ID_KEY);
 }
 
 /**
  * 设置日志扩展字段
+ * @throws \EasySwoole\Component\Context\Exception\ModifyError
  */
 function setLogExtend(string $extendId)
 {
     // 长度不能超过50个字符
     $extendId = mb_substr($extendId, 50);
-    Di::getInstance()->set(\Es3\Constant\ResultConst::EXTEND_ID_KEY, $extendId);
+//    Di::getInstance()->set(\Es3\Constant\ResultConst::EXTEND_ID_KEY, $extendId);
+    ContextManager::getInstance()->set(\Es3\Constant\ResultConst::EXTEND_ID_KEY, $extendId);
 }
 
 /**
  * 捕获异常具体的位置
+ * @throws \EasySwoole\Component\Context\Exception\ModifyError
  */
 function setResultFile(Throwable $throwable, int $traceNumber = 2)
 {
@@ -248,9 +274,9 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
         $file = $trace['file'] ?? null . $trace['function'] ?? null;
         $line = $trace['line'] ?? null;
 
-        Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $file);
-        Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
-        Di::getInstance()->set(\Es3\Constant\ResultConst::TRACE_KEY, $throwable->getTraceAsString());
+        ContextManager::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $file);
+        ContextManager::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
+        ContextManager::getInstance()->set(\Es3\Constant\ResultConst::TRACE_KEY, $throwable->getTraceAsString());
     }
 }
 /**
