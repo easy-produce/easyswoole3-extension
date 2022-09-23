@@ -282,14 +282,36 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
 /**
  * 当前是否跑在主项目上 包含自定义进程和定时任务
  */
-function isMaster()
+function isMaster(): bool
 {
-    $ref = new \ReflectionClass(EnvConst::class);
-    $serverType = $ref->getConstant('SERVER_TYPE');
+    $isMaster = false;
 
-    if ($serverType == 'SLAVE') {
-        return false;
+    // 通过IP白名单判断是否是主从
+    // 判断是否是主服务器
+    $ipList = swoole_get_local_ip();
+
+    $path = EASYSWOOLE_ROOT . '/Conf/master_ip.php';
+    $masterIpList = config('master_ip');
+
+    // 如果没有直接认为是主服务
+    if (superEmpty($masterIpList)) {
+        return true;
     }
 
-    return true;
+    foreach ($ipList as $key => $ip) {
+        if (in_array($ip, $masterIpList)) {
+            $isMaster = true;
+            break;
+        }
+    }
+    return $isMaster;
+
+//    $ref = new \ReflectionClass(EnvConst::class);
+//    $serverType = $ref->getConstant('SERVER_TYPE');
+//
+//    if ($serverType == 'SLAVE') {
+//        return false;
+//    }
+
+//    return true;
 }
