@@ -18,7 +18,7 @@ class Rpc
 
     public function autoLoad(\EasySwoole\Rpc\Config $config)
     {
-        if (!isMaster()) {
+        if (!isRunRpc()) {
             echo Utility::displayItem('Crontab', '当前环境为SLAVE 不会创建RPC');
             echo "\n";
             return;

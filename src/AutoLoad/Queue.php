@@ -16,7 +16,7 @@ class Queue
 
     public function autoLoad()
     {
-        if (!isMaster()) {
+        if (!isRunQueue()) {
             echo Utility::displayItem('Crontab', '当前环境为SLAVE 不会执行消息队列');
             echo "\n";
             return;

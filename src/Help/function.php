@@ -279,6 +279,7 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
         ContextManager::getInstance()->set(\Es3\Constant\ResultConst::TRACE_KEY, $throwable->getTraceAsString());
     }
 }
+
 /**
  * 当前是否跑在主项目上 包含自定义进程和定时任务
  */
@@ -289,5 +290,33 @@ function isMaster(): bool
 {
     $path = EASYSWOOLE_ROOT . '/Conf/master.php';
     $isMaster = (bool)config('master.is_master');
+    return $isMaster;
+}
+
+function isRunCrontab(): bool
+{
+    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
+    $isMaster = (bool)config('master.crontab');
+    return $isMaster;
+}
+
+function isRunProcess(): bool
+{
+    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
+    $isMaster = (bool)config('master.process');
+    return $isMaster;
+}
+
+function isRunQueue(): bool
+{
+    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
+    $isMaster = (bool)config('master.queue');
+    return $isMaster;
+}
+
+function isRunRpc(): bool
+{
+    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
+    $isMaster = (bool)config('master.rpc');
     return $isMaster;
 }
