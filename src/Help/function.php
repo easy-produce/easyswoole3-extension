@@ -288,6 +288,6 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
 function isMaster(): bool
 {
     $path = EASYSWOOLE_ROOT . '/Conf/master.php';
-    $isMaster = (bool)config('is_master');
+    $isMaster = (bool)config('master.is_master');
     return $isMaster;
 }
