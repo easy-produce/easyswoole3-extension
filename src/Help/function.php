@@ -288,35 +288,25 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
  */
 function isMaster(): bool
 {
-    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
-    $isMaster = (bool)config('master.is_master');
-    return $isMaster;
+    return (bool)config('master.is_master');
 }
 
 function isRunCrontab(): bool
 {
-    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
-    $isMaster = (bool)config('master.crontab');
-    return $isMaster;
+    return (bool)config('master.crontab');
 }
 
 function isRunProcess(): bool
 {
-    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
-    $isMaster = (bool)config('master.process');
-    return $isMaster;
+    return (bool)config('master.process');
 }
 
 function isRunQueue(): bool
 {
-    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
-    $isMaster = (bool)config('master.queue');
-    return $isMaster;
+    return (bool)config('master.queue');
 }
 
 function isRunRpc(): bool
 {
-    $path = EASYSWOOLE_ROOT . '/Conf/master.php';
-    $isMaster = (bool)config('master.rpc');
-    return $isMaster;
+    return (bool)config('master.rpc');
 }
