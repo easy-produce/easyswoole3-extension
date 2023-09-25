@@ -310,3 +310,8 @@ function isRunRpc(): bool
 {
     return (bool)config('master.rpc');
 }
+
+function isCrossDomain(): bool
+{
+    return (bool)config('cross_domain.is_cross_domain');
+}
