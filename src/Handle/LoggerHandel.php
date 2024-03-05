@@ -91,7 +91,7 @@ class LoggerHandel implements LoggerInterface
 //                file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
 //            });
 //        } else {
-        file_put_contents($filePath, $str, FILE_APPEND | LOCK_EX);
+//        file_put_contents($filePath, $str, FILE_APPEND | LOCK_EX);
 //        }
         return '';
     }
