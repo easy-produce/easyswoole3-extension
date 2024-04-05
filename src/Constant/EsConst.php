@@ -20,4 +20,10 @@ class EsConst
     /** 字段key定义 */
     const ES_KEY_COLUMN = 'column';
     const ES_KEY_VALUE = 'value';
+
+    /** 框架中存储 */
+    const ES_LOG_MYSQL_QUERY = 'ES_LOG_MYSQL_QUERY';
+    const ES_TRACE_ID = 'ES_TRACE_ID';
+
+
 }

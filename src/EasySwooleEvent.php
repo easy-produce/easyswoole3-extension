@@ -31,6 +31,7 @@ use EasySwoole\Rpc\NodeManager\RedisManager;
 use EasySwoole\Rpc\Rpc;
 use EasySwoole\Template\Render;
 use Es3\AutoLoad\Queue;
+use Es3\Constant\EsConst;
 use Es3\Constant\RpcConst;
 use Es3\Policy;
 use Es3\Exception\ErrorException;
@@ -94,14 +95,18 @@ class EasySwooleEvent
 
             DbManager::getInstance()->onQuery(function ($res, $builder, $start) {
 
+                if(isHttp()){
+                    $mysqlQuery = ContextManager::getInstance()->get(EsConst::ES_LOG_MYSQL_QUERY);
+                    $mysqlQuery->lastQuery[] = $builder->getLastQuery();
+                }
+
                 $nowDate = date('Y-m-d H:i:s', time());
                 if (!isProduction()) {
-                    /** 打印日志 */
-                    echo "\n====================  {$nowDate} ====================\n";
-                    echo $builder->getLastQuery() . "\n";
-                    echo "==================== {$nowDate} ====================\n";
+                    fwrite(STDOUT, "\n====================  {$nowDate} ====================\n\n");
+                    fwrite(STDOUT, $builder->getLastQuery() . "\n");
+                    fwrite(STDOUT, "\n====================  {$nowDate} ====================\n");
                 }
-                Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'query');
+//                Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'query');
             });
         }
     }
@@ -200,14 +205,13 @@ class EasySwooleEvent
      */
     public static function onRequest(Request $request, Response $response)
     {
-//        Di::getInstance()->set(AppConst::DI_RESULT, Result::class);
         ContextManager::getInstance()->set(AppConst::DI_RESULT, new Result());
 
-//        Di::getInstance()->set(AppConst::DI_REQUEST, $request);
         ContextManager::getInstance()->set(AppConst::DI_REQUEST, $request);
 
-//        Di::getInstance()->set(AppConst::DI_RESPONSE, $response);
         ContextManager::getInstance()->set(AppConst::DI_RESPONSE, $response);
+
+        ContextManager::getInstance()->set(EsConst::ES_LOG_MYSQL_QUERY, new \stdClass());
 
         /** 请求唯一标识  */
         Trace::createRequestId();

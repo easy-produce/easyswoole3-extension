@@ -28,7 +28,7 @@ class Json
      */
     public static function success(int $code = ResultConst::SUCCESS_CODE, string $msg = ResultConst::SUCCESS_MSG): void
     {
-        ContextManager::getInstance()->get(AppConst::DI_RESULT)->setTrace(debug_backtrace());
+//        ContextManager::getInstance()->get(AppConst::DI_RESULT)->setTrace(debug_backtrace());
         Json::setBody($code, $msg, true);
     }
 
@@ -77,7 +77,7 @@ class Json
             ['response_code' => $code, 'response_msg' => $msg, 'http_code' => $response->getStatusCode()]
         );
 
-        Logger::getInstance()->log(jsonEncode(['code' => $code, 'msg' => $msg]), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_REQUEST_RESPONSE);
+//        Logger::getInstance()->log(jsonEncode(['code' => $code, 'msg' => $msg]), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_REQUEST_RESPONSE);
 
         $response->withHeader('Content-type', 'application/json;charset=utf-8');
         $response->write(jsonEncode($data));

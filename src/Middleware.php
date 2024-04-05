@@ -21,29 +21,19 @@ class Middleware
 {
     public static function onRequest(Request $request, Response $response)
     {
-        $request->withAttribute('access_log', microtime(true));
-
         $self = new self();
-
         /** Api验签 */
         $self->sign($request, $response);
 
         /** 空参数过滤 */
         $self->clearEmptyParams($request, $response);
-
-        /** 写入请求日志 */
-//        $self->access($request, $response);
     }
 
     public static function afterRequest(Request $request, Response $response)
     {
         $self = new self();
-
         /** 跨域注入 */
         $self->crossDomain($request, $response);
-
-        /**slog */
-        $self->slog($request, $response);
     }
 
     private function crossDomain(Request $request, Response $response)
@@ -95,28 +85,6 @@ class Middleware
         }
 
         $request->withQueryParams($params);
-    }
-
-    private function slog(Request $request, Response $response)
-    {
-        /** 从请求里获取之前增加的时间戳 */
-        $reqTime = $request->getAttribute(LoggerConst::LOG_NAME_ACCESS);
-        /** 计算一下运行时间  */
-        $runTime = round(microtime(true) - $reqTime, 5);
-        /** 拼接一个简单的日志 */
-        $runTime = round(floatval($runTime * 1000), 0);
-
-        /** 单独记录慢日志 */
-        if ($runTime > round(LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
-
-            $logPath = strtolower(\App\Constant\EnvConst::PATH_LOG . "/" . LoggerConst::LOG_NAME_SLOG);
-            $fileDate = date('Ymd', time());
-            $filePath = "{$logPath}/{$fileDate}.log";
-
-            clearstatcache();
-            is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
-            file_put_contents($filePath, "{$runTime} ms", FILE_APPEND | LOCK_EX);
-        }
     }
 
     /**

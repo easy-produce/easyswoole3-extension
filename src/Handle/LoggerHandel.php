@@ -4,15 +4,19 @@ namespace Es3\Handle;
 
 use App\Constant\EnvConst;
 use App\Module\Callback\Service\TaskService;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\EasySwoole\Task\TaskManager;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
+use EasySwoole\ORM\DbManager;
+use Es3\Constant\EsConst;
 use Es3\Log\LogBean;
 use Es3\Output\Json;
 
 use EasySwoole\Log\LoggerInterface;
 use Es3\Trace;
 use Es3\Utility\File;
+use Es3\Utility\Text;
 use Swoole\Coroutine;
 
 class LoggerHandel implements LoggerInterface
@@ -24,6 +28,7 @@ class LoggerHandel implements LoggerInterface
     protected $line;  //抛出日志的文件代码行号
 
     private $logDir;
+    private $logConsole = false;
 
     function __construct(string $logDir = null)
     {
@@ -42,25 +47,22 @@ class LoggerHandel implements LoggerInterface
      */
     function log(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'debug'): string
     {
-        // 对日志赋值
-        $logbean = new LogBean();
-        // 设置日志等级
-        $logbean->setLevel(strtolower($this->levelMap($logLevel)));
-        // 设置日志分类
-        $logbean->setCategory($category);
-        // 设置日志内容
-        $logbean->setMsg($msg);
-        $logbean->setFile($this->file);
-        $logbean->setLine($this->line);
-        $logbean->setTrace($this->trace);
-
-//        $traceCode = Trace::getRequestId();
-
+        // 创建时间
         $date = date('Y-m-d H:i:s');
+        // 分类
         $category = strtolower($category);
+        // 项目
         $project = strtolower(EnvConst::SERVICE_NAME);
+        // 等级
         $levelStr = strtolower($this->levelMap($logLevel));
-        $logPath = "{$this->logDir}/{$category}/{$levelStr}";
+        // 请求Id
+        $traceId = Trace::getRequestId();
+        // env
+        $runEnv = isHttp() ? 'http' : 'progres';
+        // request
+        $request = requestLog();
+
+        $logPath = "{$this->logDir}/{$levelStr}/{$category}";
 
         clearstatcache();
         is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
@@ -68,44 +70,34 @@ class LoggerHandel implements LoggerInterface
         $fileDate = date('Ymd', time());
         $filePath = "{$logPath}/{$fileDate}.log";
 
+        $data = [
+            'title' => "[{$date}][{$project}][{$category}][{$levelStr}][{$traceId}]",
+            'content' => Text::clearEscape($msg),
+            'file' => "file:{$this->getFile()} line:{$this->getLine()}",
+            'server' => [
+                'pid' => getmypid(),
+                'is_master' => isMaster(),
+                'is_http' => isHttp(),
+                'request' => $request,
+                'trace' => $this->getTrace()
+            ],
+        ];
 
-        // 通过日志分类截取日志负责人
-        $categoryLen = mb_strlen($category);
-        $leaderName = null;
-
-        if (strpos($category, '-') && $categoryLen > 3) {
-            $leaderName = explode('-', $category);
-            $leaderName = current($leaderName) ?? null;
+        if (isHttp()) {
+            $mysqlQuery = ContextManager::getInstance()->get(EsConst::ES_LOG_MYSQL_QUERY);
+            $data['last_query'] = $mysqlQuery->lastQuery ?? null;
         }
+        
+        $string = jsonEncode($data);
 
-        // 设置负责人名称
-        $logbean->setLeaderName($leaderName);
-        $str = jsonEncode($logbean->toArray()) . "\n";
-
-//        Coroutine::create(function () use ($filePath, $str) {
-//        file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
-//        });
-
-//        if (isHttp()) {
-//            TaskManager::getInstance()->async(function ($filePath, $str) {
-//                file_put_contents($filePath, stripslashes("{$str}"), FILE_APPEND | LOCK_EX);
-//            });
-//        } else {
-//        file_put_contents($filePath, $str, FILE_APPEND | LOCK_EX);
-//        }
+        file_put_contents($filePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
+        fwrite(STDOUT, "\n" . $string . "\n");
         return '';
     }
 
     function console(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'console')
     {
-        if (isProduction()) {
-            return;
-        }
-
-        $date = date('Y-m-d H:i:s');
-        $levelStr = $this->levelMap($logLevel);
-        $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";
-        fwrite(STDOUT, stripslashes($temp));
+//        $this->log($msg, $logLevel, $category);
     }
 
     private function levelMap(int $level): string

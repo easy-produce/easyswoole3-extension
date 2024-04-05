@@ -17,10 +17,9 @@ class BaseException extends \Exception
     {
         $loggerHandel = new LoggerHandel(strtolower(EnvConst::PATH_LOG));
         $loggerHandel->setTrace($this->getTrace());
-        $loggerHandel->getLine($this->getLine());
+        $loggerHandel->setLine($this->getLine());
         $loggerHandel->setFile($this->getFile());
 
-        // 写入日志
 //        $msg = "运行出现异常 错误号:{$code} 错误信息:{$msg}";
         $category = $this->category;
         $level = $loggerHandel->mapToLevel($category);
