@@ -82,7 +82,7 @@ class LoggerHandel implements LoggerInterface
                 'trace' => $this->getTrace()
             ],
         ];
-        
+
         if (isHttp()) {
             $mysqlQuery = ContextManager::getInstance()->get(EsConst::ES_LOG_MYSQL_QUERY);
             $lastQuery = isset($mysqlQuery->lastQuery) ? $mysqlQuery->lastQuery : [];

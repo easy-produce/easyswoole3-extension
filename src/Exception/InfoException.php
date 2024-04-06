@@ -9,6 +9,6 @@ class InfoException extends \Exception
 {
     public function __construct(int $code, string $msg = '', \Throwable $previous = null)
     {
-        parent::__construct($code, $msg, $previous);
+        parent::__construct($msg, $code, $previous);
     }
 }

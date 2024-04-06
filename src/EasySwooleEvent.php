@@ -33,6 +33,8 @@ use EasySwoole\Template\Render;
 use Es3\AutoLoad\Queue;
 use Es3\Constant\EsConst;
 use Es3\Constant\RpcConst;
+use Es3\Handle\ErrorHandel;
+use Es3\Handle\TriggerHandel;
 use Es3\Policy;
 use Es3\Exception\ErrorException;
 use Es3\Handle\HttpThrowable;
@@ -50,39 +52,6 @@ class EasySwooleEvent
         // 设置精度
         ini_set('serialize_precision', 14);
 
-        /** 加载配置文件 */
-        \Es3\AutoLoad\Config::getInstance()->autoLoad();
-
-        /** 路由初始化 */
-        \Es3\AutoLoad\Router::getInstance()->autoLoad();
-
-        /** 配置控制器命名空间 */
-        Di::getInstance()->set(SysConst::HTTP_CONTROLLER_NAMESPACE, 'App\\Controller\\');
-
-        /** 注入http异常处理 */
-        Di::getInstance()->set(SysConst::HTTP_EXCEPTION_HANDLER, [HttpThrowable::class, 'run']);
-
-        /** 事件注册 */
-        \Es3\AutoLoad\Event::getInstance()->autoLoad();
-
-        /** 替换composer.json 确保每次测试环境自动更新 */
-        if (!isProduction()) {
-//            $composerJson = './composer.json';
-//            file_put_contents($composerJson, ' ', FILE_APPEND);
-        }
-
-        /** 目录不存在就创建 */
-        is_dir(strtolower(EnvConst::PATH_LOG)) ? null : mkdir(strtolower(EnvConst::PATH_LOG), 0777, true);
-        is_dir(strtolower(EnvConst::PATH_TEMP)) ? null : mkdir(strtolower(EnvConst::PATH_TEMP), 0777, true);
-        is_dir(strtolower(EnvConst::PATH_LOCK)) ? null : mkdir(strtolower(EnvConst::PATH_LOCK), 0777, true);
-
-//        /** 拷贝钩子 */
-//        if (isDev()) {
-//            $gitPreCommit = EASYSWOOLE_ROOT . '/.git/hooks/pre-commit';
-//            copy(EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/Hocks/pre-commit', $gitPreCommit);
-//            chmod($gitPreCommit, 0755);
-//        }
-
         /** ORM  */
         $mysqlConf = config('mysql', true);
         if (!superEmpty($mysqlConf)) {
@@ -95,7 +64,7 @@ class EasySwooleEvent
 
             DbManager::getInstance()->onQuery(function ($res, $builder, $start) {
 
-                if(isHttp()){
+                if (isHttp()) {
                     $mysqlQuery = ContextManager::getInstance()->get(EsConst::ES_LOG_MYSQL_QUERY);
                     $mysqlQuery->lastQuery[] = $builder->getLastQuery();
                 }
@@ -109,6 +78,29 @@ class EasySwooleEvent
 //                Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'query');
             });
         }
+
+
+        /** 加载配置文件 */
+        \Es3\AutoLoad\Config::getInstance()->autoLoad();
+
+        /** 路由初始化 */
+        \Es3\AutoLoad\Router::getInstance()->autoLoad();
+
+        /** 配置控制器命名空间 */
+        Di::getInstance()->set(SysConst::HTTP_CONTROLLER_NAMESPACE, 'App\\Controller\\');
+
+
+        /** 注入http异常处理 */
+        Di::getInstance()->set(SysConst::HTTP_EXCEPTION_HANDLER, [HttpThrowable::class, 'run']);
+
+
+        /** 目录不存在就创建 */
+        is_dir(strtolower(EnvConst::PATH_LOG)) ? null : mkdir(strtolower(EnvConst::PATH_LOG), 0777, true);
+        is_dir(strtolower(EnvConst::PATH_TEMP)) ? null : mkdir(strtolower(EnvConst::PATH_TEMP), 0777, true);
+        is_dir(strtolower(EnvConst::PATH_LOCK)) ? null : mkdir(strtolower(EnvConst::PATH_LOCK), 0777, true);
+
+        /** 事件注册 */
+        \Es3\AutoLoad\Event::getInstance()->autoLoad();
     }
 
     public static function frameInitialize(): void
@@ -123,20 +115,11 @@ class EasySwooleEvent
      */
     public static function mainServerCreate(EventRegister $register): void
     {
-        /** 初始化定时任务 */
-        \Es3\AutoLoad\Crontab::getInstance()->autoLoad();
-
-        /** 初始化自定义进程 */
-        \Es3\AutoLoad\Process::getInstance()->autoLoad();
-
-        /** 策略加载 */
-//        Di::getInstance()->set(AppConst::POLICY_CONF_IS_AUTH, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_AUTH));
         /** 策略加载 */
         Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_AUTH);
 
         $policyConfIsSign = (new \ReflectionClass(AppConst::class))->getConstant('POLICY_CONF_IS_SIGN');
         if ($policyConfIsSign) {
-//            Di::getInstance()->set(AppConst::POLICY_CONF_IS_SIGN, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN));
             Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN);
         }
 
@@ -172,23 +155,7 @@ class EasySwooleEvent
             Queue::getInstance()->autoLoad();
         }
 
-        /** rpc */
         $redisConf = config('redis', true);
-        if (!superEmpty($redisConf)) {
-
-            /** 给rpc专门开设redis */
-            $redisConf['db'] = RpcConst::RPC_REDIS_DB;
-            $redisConf = new \EasySwoole\Redis\Config\RedisConfig($redisConf);
-            \EasySwoole\RedisPool\Redis::getInstance()->register(RpcConst::RPC_REDIS_KEY, $redisConf);
-
-            /** 服务端自动注册 */
-            $redisPool = \EasySwoole\RedisPool\Redis::getInstance()->get(RpcConst::RPC_REDIS_KEY);
-            $config = new \EasySwoole\Rpc\Config();
-            $config->setServerIp(EnvConst::RPC_SERVER_HOST);
-            $config->setListenPort(EnvConst::RPC_PORT);
-            $config->setNodeManager(new RedisManager($redisPool));
-            \Es3\AutoLoad\Rpc::getInstance()->autoLoad($config);
-        }
 
         /** fast cache */
         $config = new \EasySwoole\FastCache\Config();
@@ -198,6 +165,10 @@ class EasySwooleEvent
 
         /** 限流器 */
         \Es3\AutoLoad\AtomicLimit::getInstance()->autoLoad();
+        /** 初始化定时任务 */
+        \Es3\AutoLoad\Crontab::getInstance()->autoLoad();
+        /** 初始化自定义进程 */
+        \Es3\AutoLoad\Process::getInstance()->autoLoad();
     }
 
     /**

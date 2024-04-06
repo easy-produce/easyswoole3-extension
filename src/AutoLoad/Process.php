@@ -54,10 +54,10 @@ class Process
 
                         $conf->setProcessName($processName);
                         $conf->setProcessGroup($processGroup);
-                        
+
                         \EasySwoole\Component\Process\Manager::getInstance()->addProcess(new $class($conf));
 
-                        echo  Utility::displayItem('Process',$class);
+                        echo Utility::displayItem('Process', $class);
                         echo "\n";
                     }
                 }
