@@ -10,7 +10,7 @@
     "easyswoole/pay": "1.2.*",
     "easyswoole/rpc": "4.0.*",
     "easyswoole/wechat": "2.x",
-    "easyswoole/easyswoole": "3.3.*",
+    "easyswoole/easyswoole": "3.7.*",
     "easyswoole/orm": "1.4.*",
     "easyswoole/swoole-ide-helper": "*",
     "easyswoole/http-annotation": "1.3.1",
