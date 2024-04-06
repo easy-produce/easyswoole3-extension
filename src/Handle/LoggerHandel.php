@@ -82,13 +82,23 @@ class LoggerHandel implements LoggerInterface
                 'trace' => $this->getTrace()
             ],
         ];
-
+        
         if (isHttp()) {
             $mysqlQuery = ContextManager::getInstance()->get(EsConst::ES_LOG_MYSQL_QUERY);
-            $data['last_query'] = $mysqlQuery->lastQuery ?? null;
+            $lastQuery = isset($mysqlQuery->lastQuery) ? $mysqlQuery->lastQuery : [];
+            $data['last_query'] = $lastQuery;
+            $mysqlQueryCont = count($lastQuery);
         }
-        
+
         $string = jsonEncode($data);
+
+        // 如果mysql查询行数超过20 单独记日志
+        if (isHttp() && $mysqlQueryCont >= 20) {
+            $mysqlSlowPath = "{$this->logDir}/slow/mysql-{$mysqlQueryCont}";
+            is_dir($mysqlSlowPath) ? null : File::createDirectory($mysqlSlowPath, 0777);
+            $mysqlSlowFilePath = "{$mysqlSlowPath}/{$fileDate}.log";
+            file_put_contents($mysqlSlowFilePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
+        }
 
         file_put_contents($filePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
         fwrite(STDOUT, "\n" . $string . "\n");
