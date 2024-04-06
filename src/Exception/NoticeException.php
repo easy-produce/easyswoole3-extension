@@ -5,7 +5,7 @@ namespace Es3\Exception;
 
 use EasySwoole\EasySwoole\Logger;
 
-class InfoException extends \Exception
+class NoticeException extends \Exception
 {
     public function __construct(int $code, string $msg = '', \Throwable $previous = null)
     {
