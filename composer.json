@@ -15,6 +15,7 @@
     "easyswoole/rpc": "4.0.*",
     "easyswoole/easyswoole": "3.7.*",
     "easyswoole/orm": "*",
+    "easyswoole/wechat": "2.x",
     "easyswoole/swoole-ide-helper": "*",
     "easyswoole/http-annotation": "*",
     "easyswoole/tracker": "*",
