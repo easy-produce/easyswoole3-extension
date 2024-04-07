@@ -19,7 +19,7 @@
     "easyswoole/swoole-ide-helper": "*",
     "easyswoole/http-annotation": "*",
     "easyswoole/tracker": "*",
-    "easyswoole/hot-reload": "0.1.*",
+    "easyswoole/hot-reload": "*",
     "easyswoole/redis": "*",
     "easyswoole/redis-pool": "*",
     "easyswoole/code-generation": "*",
