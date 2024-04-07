@@ -28,7 +28,6 @@
     "easyswoole/redis-pool": "3.0.*",
     "easyswoole/pool": "1.0.*",
     "easyswoole/http-client": "1.4.*",
-    "easyswoole/policy": "1.0.*",
     "easyswoole/queue": "2.0.*",
     "easyswoole/fast-cache": "2.0.*",
     "easyswoole/smtp": "2.*",
