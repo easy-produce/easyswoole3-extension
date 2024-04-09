@@ -9,12 +9,16 @@ use EasySwoole\EasySwoole\Swoole\EventRegister;
 
 class EasySwooleEvent implements Event
 {
-    public static function initialize()
+    /**
+     * @return void
+     */
+    public static function initialize(): void
     {
-        date_default_timezone_set('Asia/Shanghai');
+        \Es3\EasySwooleEvent::initialize();
     }
 
-    public static function mainServerCreate(EventRegister $register)
+    public static function mainServerCreate(EventRegister $register): void
     {
+        \Es3\EasySwooleEvent::mainServerCreate($register);
     }
 }
