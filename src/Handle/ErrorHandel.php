@@ -15,9 +15,9 @@ class ErrorHandel
 {
     public static function run($errorCode, $description, $file = null, $line = null)
     {
-        if (isHttp()) {
-            throw new ErrorException($errorCode, $description);
-        }
+//        if (isHttp()) {
+//            throw new ErrorException($errorCode, $description);
+//        }
         
         Logger::getInstance()->log($description, LoggerInterface::LOG_LEVEL_ERROR, "system");
     }
