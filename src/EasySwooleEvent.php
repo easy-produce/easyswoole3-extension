@@ -191,6 +191,10 @@ class EasySwooleEvent
             Cache::getInstance($config)->attachToServer($server);
 
             /** todo html模板 因为得输出html模板 */
+            Render::getInstance()->getConfig()->setRender(new Smarty());
+            Render::getInstance()->getConfig()->setTempDir(EASYSWOOLE_TEMP_DIR);
+            Render::getInstance()->attachServer(ServerManager::getInstance()->getSwooleServer());
+
 //            /** 初始化定时任务 */
             \Es3\AutoLoad\Crontab::getInstance()->autoLoad();
 //            /** 初始化自定义进程 */

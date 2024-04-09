@@ -18,7 +18,7 @@ class Smarty implements RenderInterface
         $this->smarty->setCompileDir("{$temp}/smarty/compile/");
     }
 
-    public function render(string $template, array $data = [], array $options = []): ?string
+    public function render(string $template, ?array $data = [], ?array $options = []): ?string
     {
         foreach ($data as $key => $item) {
             $this->smarty->assign($key, $item);
@@ -27,12 +27,12 @@ class Smarty implements RenderInterface
             $merge_tpl_vars = true, $no_output_filter = false);
     }
 
-    public function afterRender(?string $result, string $template, array $data = [], array $options = [])
+    public function afterRender(?string $result, string $template, ?array $data = [], ?array $options = [])
     {
 
     }
 
-    public function onException(\Throwable $throwable): string
+    public function onException(\Throwable $throwable,$arg): string
     {
         $msg = "{$throwable->getMessage()} at file:{$throwable->getFile()} line:{$throwable->getLine()}";
         trigger_error($msg);
