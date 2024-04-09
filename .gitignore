@@ -7,7 +7,5 @@ log/!index.html
 *.ntvs*
 *.sln
 *.lock
-vendor
 composer.lock
 Temp/*
-.php_cs.cache
