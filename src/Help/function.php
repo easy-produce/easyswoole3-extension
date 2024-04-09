@@ -117,8 +117,8 @@ function requestLog(): ?array
         'tmpfiles' => $swooleRequest['tmpfiles'] ?? null,
     ];
     $headerServer = array_merge($headerServer1, $headerServer2);
-    $headerServer['trace_code'] = Trace::getRequestId();
-
+    $headerServer['trace_id'] = Trace::getRequestId();
+    
     return $headerServer;
 
 }

@@ -56,7 +56,7 @@ class Json
      * @param bool $isSuccess
      * @throws \Throwable
      */
-    private static function setBody(int $code, string $msg = '', bool $isSuccess): void
+    private static function setBody(int $code, string $msg = '', bool $isSuccess = null): void
     {
 //        $response = Di::getInstance()->get(AppConst::DI_RESPONSE);
         $response = ContextManager::getInstance()->get(AppConst::DI_RESPONSE);

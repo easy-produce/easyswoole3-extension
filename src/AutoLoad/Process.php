@@ -18,7 +18,7 @@ class Process
     {
         try {
             if (!isRunProcess()) {
-                echo Utility::displayItem('Crontab', '当前环境为SLAVE 不会执行自定义进程');
+                echo Utility::displayItem('Process', '当前环境为SLAVE 不会执行自定义进程');
                 echo "\n";
                 return;
             }
@@ -65,6 +65,8 @@ class Process
 
         } catch (\Throwable $throwable) {
             echo 'Process Initialize Fail :' . $throwable->getMessage();
+            echo 'Process Initialize Fail File :' . $throwable->getFile();
+            echo 'Process Initialize Fail Line :' . $throwable->getLine();
         }
     }
 }
