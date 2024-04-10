@@ -34,7 +34,7 @@ class Jwt
         }
     }
 
-    public function encode(array $data = [], ?string $key, ?string $alg): string
+    public function encode(array $data = [], ?string $key = null, ?string $alg = null): string
     {
         try {
             if (superEmpty($key) || superEmpty($alg)) {

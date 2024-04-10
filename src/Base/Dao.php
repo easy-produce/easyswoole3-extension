@@ -99,7 +99,7 @@ trait Dao
         }
     }
 
-    public function update(array $data = [], array $primary, $allow = false): int
+    public function update(array $data = [], array $primary = [], $allow = false): int
     {
         try {
             $schemaInfo = $this->model->schemaInfo();
