@@ -13,6 +13,7 @@
     "alanchen365/basic-sdk": "*",
     "easyswoole/easyswoole": "3.6.3",
     "easyswoole/template": "1.1.0",
+    "easyswoole/log": "1.1.4",
     "easyswoole/hot-reload": "*",
     "easyswoole/redis-pool": "2.1.*",
     "easyswoole/validate": "2.1.3",
