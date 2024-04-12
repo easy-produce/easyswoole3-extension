@@ -106,11 +106,11 @@ class Result
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
             ResultConst::MSG_KEY => $this->_msg,
-            'file' => str_replace(EASYSWOOLE_ROOT, '', $this->_file ?? ''),
-            'line' => $this->_line,
+//            'file' => str_replace(EASYSWOOLE_ROOT, '', $this->_file ?? ''),
+//            'line' => $this->_line,
 //            ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
-            AppConst::DI_TRACE_CODE => ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE),
+            'trace_id' => ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE),
         ];
 
         // 不是生产环境增加追踪机制
