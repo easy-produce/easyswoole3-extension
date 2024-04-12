@@ -18,7 +18,7 @@ class ErrorHandel
 //        if (isHttp()) {
 //            throw new ErrorException($errorCode, $description);
 //        }
-        
-        Logger::getInstance()->log($description, LoggerInterface::LOG_LEVEL_ERROR, "system");
+
+        Logger::getInstance()->log("$description file : $file  line : $line", LoggerInterface::LOG_LEVEL_ERROR, "system");
     }
 }
