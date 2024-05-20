@@ -2,10 +2,14 @@
 
 namespace Es3\Handle;
 
+use EasySwoole\EasySwoole\Logger;
+use EasySwoole\Log\LoggerInterface;
+
 class CrontabHandel
 {
-    public static function run()
+    public static function run(...$args)
     {
-        var_dump('errorerrorerrorerrorerrorerrorerrorerrorerror11111');
+        $msg = json_encode($args);
+        Logger::getInstance()->log("msg: {$msg}", LoggerInterface::LOG_LEVEL_ERROR, "crontab_handel");
     }
 }

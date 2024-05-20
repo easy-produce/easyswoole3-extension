@@ -15,10 +15,11 @@ class ErrorHandel
 {
     public static function run($errorCode, $description, $file = null, $line = null)
     {
-//        if (isHttp()) {
-//            throw new ErrorException($errorCode, $description);
-//        }
+        $errorMsg = "$description file : $file  line : $line";
+        Logger::getInstance()->log($errorMsg, LoggerInterface::LOG_LEVEL_ERROR, "error_handel");
 
-        Logger::getInstance()->log("$description file : $file  line : $line", LoggerInterface::LOG_LEVEL_ERROR, "system");
+        if (isHttp()) {
+            throw new ErrorException($errorCode, $errorMsg);
+        }
     }
 }

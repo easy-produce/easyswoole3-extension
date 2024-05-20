@@ -31,4 +31,8 @@ class PhpFileLock
     {
         $flg = flock($this->fp, LOCK_UN);    // 释放锁定
     }
+
+    public trylock(){
+
+}
 }
