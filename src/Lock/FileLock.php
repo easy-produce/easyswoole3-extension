@@ -2,17 +2,35 @@
 
 namespace Es3\Lock;
 
-use EasySwoole\Core\Component\Logger;
 use Es3\Exception\ErrorException;
 
-class FileLock
+class PhpFileLock
 {
-    public static function get(string $fileName): PhpFileLock
-    {
-        $tempDir = \config('LOCK_DIR');
-        $fileName = "{$tempDir}lock_{$fileName}.lock";
+    private $fp;
 
-        $lock = new PhpFileLock($fileName);
-        return $lock;
+    function __construct(string $fileName)
+    {
+        $this->fp = fopen("$fileName", "w+");
     }
+
+    /**
+     * @return $this
+     * @throws \Es3\Exception\ErrorException
+     */
+    public function lock()
+    {
+        $flg = flock($this->fp, LOCK_EX);
+        if (!$flg) {
+            throw new ErrorException(1053, "加锁失败");
+        }
+
+        return $this;
+    }
+
+    public function unlock()
+    {
+        $flg = flock($this->fp, LOCK_UN);    // 释放锁定
+    }
+
+
 }
