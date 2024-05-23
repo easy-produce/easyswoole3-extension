@@ -4,7 +4,7 @@ namespace Es3\Lock;
 
 use Es3\Exception\ErrorException;
 
-class PhpFileLock
+class EasyLock
 {
     private $fp;
 
@@ -17,7 +17,7 @@ class PhpFileLock
      * @return $this
      * @throws \Es3\Exception\ErrorException
      */
-    public function lock()
+    public function lock(): static
     {
         $flg = flock($this->fp, LOCK_EX);
         if (!$flg) {
@@ -27,10 +27,9 @@ class PhpFileLock
         return $this;
     }
 
-    public function unlock()
+    public function unlock(): bool
     {
-        $flg = flock($this->fp, LOCK_UN);    // 释放锁定
+        // 释放锁定
+        return flock($this->fp, LOCK_UN);
     }
-
-
 }

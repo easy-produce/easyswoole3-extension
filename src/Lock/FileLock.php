@@ -7,12 +7,12 @@ use Es3\Exception\ErrorException;
 
 class FileLock
 {
-    public static function get(string $fileName): PhpFileLock
+    public static function get(string $fileName): EasyLock
     {
         $tempDir = \config('LOCK_DIR');
         $fileName = "{$tempDir}lock_{$fileName}.lock";
 
-        $lock = new PhpFileLock($fileName);
+        $lock = new EasyLock($fileName);
         return $lock;
     }
 }
