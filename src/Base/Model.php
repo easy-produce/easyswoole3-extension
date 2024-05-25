@@ -124,13 +124,13 @@ class Model extends AbstractModel
     /**
      * 重写model中的自动开启事物
      */
-    public function insertAll($data, ?string $column = ''): array
-    {
-        $isTransaction = DbManager::getInstance()->invoke(function (ClientInterface $client) {
-            return DbManager::isInTransaction($client);
-        });
-
-        $result = parent::saveAll($data, false, !$isTransaction);
-        return $column ? array_column($result, 'id') : [];
-    }
+//    public function insertAll($data, ?string $column = ''): array
+//    {
+//        $isTransaction = DbManager::getInstance()->invoke(function (ClientInterface $client) {
+//            return DbManager::isInTransaction($client);
+//        });
+//
+//        $result = parent::saveAll($data, false, !$isTransaction);
+//        return $column ? array_column($result, 'id') : [];
+//    }
 }

@@ -356,4 +356,9 @@ trait Dao
             throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
+
+    public function getTableName(): string
+    {
+        return $this->model->getTableName();
+    }
 }

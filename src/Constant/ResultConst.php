@@ -17,4 +17,12 @@ class ResultConst
     const RESPONSE_KEY = 'response';
     // 扩展
     const EXTEND_ID_KEY = 'extend_id';
+    // 数据查询
+    const DB_QUERY = 'db_query';
+    // 数据库绑定参数
+    const DB_BIND = 'db_bind';
+    // 影响行数
+    const RESULT_AFFECTED_ROWS_KEY = 'affected_rows';
+    // 最后一条id
+    const RESULT_LAST_INSERT_ID_KEY = 'last_insert_id';
 }

@@ -5,6 +5,7 @@ namespace Es3\Base;
 use App\Constant\AppConst;
 use EasySwoole\Component\Di;
 use EasySwoole\Mysqli\QueryBuilder;
+use Es3\Constant\ResultConst;
 use Es3\Exception\WaringException;
 
 trait Service
@@ -63,13 +64,17 @@ trait Service
     /**
      * 批量插入
      * @param array $data 二维数组
-     * @param bool $replace 是否覆盖
-     * @param bool $transaction 是否开启事务，默认为true，
-     * @param string $retrunField 返回字段
      */
     public function insertAll(array $data, ?string $column = ''): array
     {
-        return $this->dao->insertAll($data, $column);
+        $tableName = $this->dao->getTableName();
+
+        $data = \Es3\Utility\Model::insertAll($tableName, $data);
+
+        $sql = $data[ResultConst::DB_QUERY];
+        $bind = $data[ResultConst::DB_BIND];
+
+        return $this->dao->exec($sql, $bind);
     }
 
     /**
