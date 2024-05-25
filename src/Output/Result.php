@@ -102,11 +102,14 @@ class Result
     {
         $result = empty($this->_result) ? (object)[] : $this->_result;
 
+        $file = str_replace(EASYSWOOLE_ROOT, '', $this->_file ?? '');
+        $file = str_replace('.php', '.java', basename($file)) . " [$this->_line]";
+
         $data = [
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
-            ResultConst::MSG_KEY => $this->_msg,
-//            'file' => str_replace(EASYSWOOLE_ROOT, '', $this->_file ?? ''),
+            ResultConst::MSG_KEY => $this->_msg . " {$file}",
+//            'file' => $file,
 //            'line' => $this->_line,
 //            ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
