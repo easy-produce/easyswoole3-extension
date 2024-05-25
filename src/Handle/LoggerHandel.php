@@ -73,7 +73,7 @@ class LoggerHandel implements LoggerInterface
         $data = [
             'title' => "[{$date}][{$project}][{$category}][{$levelStr}][{$traceId}]",
             'content' => Text::clearEscape($msg),
-            'file' => "file:{$this->getFile()} line:{$this->getLine()}",
+            'file' => "{$this->getFile()}",
             'server' => [
                 'pid' => getmypid(),
                 'is_master' => isMaster(),

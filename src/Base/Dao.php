@@ -8,6 +8,7 @@ use EasySwoole\ORM\Db\ClientInterface;
 use EasySwoole\ORM\DbManager;
 use Es3\Exception\ErrorException;
 use EasySwoole\Mysqli\QueryBuilder;
+use Es3\Exception\InfoException;
 use Es3\Exception\WaringException;
 use function PHPUnit\Framework\any;
 
@@ -61,7 +62,7 @@ trait Dao
 
             $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
             if ($lastErrorNo !== 0) {
-                throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
+                throw new InfoException(1005, $model->lastQueryResult()->getLastError());
             }
 
             return intval($this->model->lastQueryResult()->getAffectedRows());
@@ -88,7 +89,7 @@ trait Dao
 
             $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
             if ($lastErrorNo !== 0) {
-                throw new ErrorException(1004, $model->lastQueryResult()->getLastError());
+                throw new InfoException(1004, $model->lastQueryResult()->getLastError());
             }
 
             return intval($this->model->lastQueryResult()->getAffectedRows());
@@ -117,7 +118,7 @@ trait Dao
 
             $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
             if ($lastErrorNo !== 0) {
-                throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
+                throw new InfoException(1005, $model->lastQueryResult()->getLastError());
             }
 
             return intval($this->model->lastQueryResult()->getAffectedRows());
@@ -156,7 +157,6 @@ trait Dao
     public function setAutoIncrement(int $autoIncrement): void
     {
         try {
-
             $schemaInfo = $this->model->schemaInfo();
             $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
         } catch (\Throwable $throwable) {
@@ -190,7 +190,7 @@ trait Dao
                     /** 如果该字段在表中不存在 就报错 */
                     $isExist = \Es3\Utility\Model::columnIsExist($model, $key);
                     if (!$isExist) {
-                        throw new WaringException(1063, "无法按{$key}进行排序 数据表{$tableName}不存在{$key}字段");
+                        throw new InfoException(1063, "无法按{$key}进行排序 数据表{$tableName}不存在{$key}字段");
                     }
                     $model->order($key, $orderBy);
                 }
@@ -229,7 +229,7 @@ trait Dao
             /** 如果该字段在表中不存在 就报错 */
             $isExist = \Es3\Utility\Model::columnIsExist($model, $column);
             if (!$isExist) {
-                throw new WaringException(1063, "无法按{$column}进行切换状态 数据表{$tableName}不存在{$column}字段");
+                throw new InfoException(1063, "无法按{$column}进行切换状态 数据表{$tableName}不存在{$column}字段");
             }
 
             return $this->update([$column => $switchRule], $ids);
@@ -255,23 +255,16 @@ trait Dao
 
     public function insertAll(array $data, ?string $column = ''): array
     {
-        try {
-            /** 当前是否开启事物 */
-            $this->model = $this->model::create();
+        /** 当前是否开启事物 */
+        $this->model = $this->model::create();
 
-            foreach ($data as $key => $val) {
-                $val = $this->model->autoCreateUser($val);
-                $data[$key] = $val;
-            }
-
-            $result = $this->model->insertAll($data, $column);
-
-            return $result;
-        } catch (\Throwable $throwable) {
-            // 手动设置异常位置
-            setResultFile($throwable, 2);
-            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+        foreach ($data as $key => $val) {
+            $val = $this->model->autoCreateUser($val);
+            $data[$key] = $val;
         }
+
+        $result = $this->model->insertAll($data, $column);
+        return $result;
     }
 
     /**
@@ -346,7 +339,7 @@ trait Dao
             $lastError = $results->getLastError();
 
             if ($lastErrorNo !== 0) {
-                throw new ErrorException(1011, $lastError);
+                throw new InfoException(1011, $lastError);
             }
 
             return [ResultConst::RESULT_AFFECTED_ROWS_KEY => $results->getAffectedRows(), ResultConst::RESULT_LAST_INSERT_ID_KEY => $results->getLastInsertId()];

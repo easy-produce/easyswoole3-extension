@@ -118,7 +118,7 @@ function requestLog(): ?array
     ];
     $headerServer = array_merge($headerServer1, $headerServer2);
     $headerServer['trace_id'] = Trace::getRequestId();
-    
+
     return $headerServer;
 
 }
@@ -273,7 +273,6 @@ function setResultFile(Throwable $throwable, int $traceNumber = 2)
         $trace = $throwable->getTrace()[$traceNumber] ?? null;
         $file = $trace['file'] ?? null . $trace['function'] ?? null;
         $line = $trace['line'] ?? null;
-
         ContextManager::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $file);
         ContextManager::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
         ContextManager::getInstance()->set(\Es3\Constant\ResultConst::TRACE_KEY, $throwable->getTraceAsString());

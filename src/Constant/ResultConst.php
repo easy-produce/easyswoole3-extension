@@ -25,4 +25,5 @@ class ResultConst
     const RESULT_AFFECTED_ROWS_KEY = 'affected_rows';
     // 最后一条id
     const RESULT_LAST_INSERT_ID_KEY = 'last_insert_id';
+    
 }

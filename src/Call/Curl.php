@@ -6,7 +6,9 @@ use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Logger;
 use EasySwoole\HttpClient\Bean\Response;
 use  EasySwoole\HttpClient\HttpClient;
+use Es3\Exception\CurlException;
 use Es3\Exception\ErrorException;
+use Es3\Exception\InfoException;
 
 class Curl extends HttpClient
 {
@@ -120,13 +122,12 @@ class Curl extends HttpClient
             }
 
             if ($errCode !== 0) {
-                throw new ErrorException(1021, "访问远程网络 {$this->url} , 出现{$response->getErrMsg()}错误,请联系管理员反馈处理");
+                throw new InfoException(1021, "访问远程网络 {$this->url} , 出现{$response->getErrMsg()}错误,请联系管理员反馈处理");
             }
 
         } catch (\Throwable $throwable) {
-
             setResultFile($throwable, 2);
-            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+            throw new CurlException($throwable->getCode(), $throwable->getMessage());
         }
     }
 
@@ -135,13 +136,11 @@ class Curl extends HttpClient
         try {
             $code = $response->getStatusCode();
             if (200 != $code) {
-                throw new ErrorException(1020, '远程网络连接失败 http_code:' . $code . ' ' . $response->getBody());
+                throw new InfoException(1020, '远程网络连接失败 http_code:' . $code . ' ' . $response->getBody());
             }
-
         } catch (\Throwable $throwable) {
-
             setResultFile($throwable, 2);
-            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+            throw new CurlException($throwable->getCode(), $throwable->getMessage());
         }
     }
 

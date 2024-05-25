@@ -3,11 +3,16 @@
 namespace Es3\Base;
 
 use App\Constant\AppConst;
+use EasySwoole\Mysqli\QueryBuilder;
 use EasySwoole\ORM\AbstractModel;
 use EasySwoole\ORM\Db\ClientInterface;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\ORM\Utility\Schema\Table;
+use Es3\Constant\ResultConst;
 use Es3\EsUtility;
+use Es3\Exception\DbException;
+use Es3\Exception\ErrorException;
+use Es3\Exception\InfoException;
 
 class Model extends AbstractModel
 {
@@ -124,13 +129,37 @@ class Model extends AbstractModel
     /**
      * 重写model中的自动开启事物
      */
-//    public function insertAll($data, ?string $column = ''): array
-//    {
-//        $isTransaction = DbManager::getInstance()->invoke(function (ClientInterface $client) {
-//            return DbManager::isInTransaction($client);
-//        });
-//
-//        $result = parent::saveAll($data, false, !$isTransaction);
-//        return $column ? array_column($result, 'id') : [];
-//    }
+    public function insertAll($data): array
+    {
+        $tableName = $this->getTableName();
+        $data = \Es3\Utility\Model::insertAll($tableName, $data);
+
+        $sql = $data[ResultConst::DB_QUERY];
+        $bind = $data[ResultConst::DB_BIND];
+
+        try {
+            $queryBuild = new QueryBuilder();
+            $queryBuild->raw($sql, $bind);
+
+            $results = DbManager::getInstance()->query($queryBuild, true);
+
+            $results->getResult();
+
+            $lastErrorNo = $results->getLastErrorNo();
+            $lastError = $results->getLastError();
+
+            if ($lastErrorNo !== 10) {
+                throw new InfoException(1011, "批量写入失败: " . $lastError);
+            }
+
+            return [
+                ResultConst::RESULT_AFFECTED_ROWS_KEY => $results->getAffectedRows(),
+                ResultConst::RESULT_LAST_INSERT_ID_KEY => $results->getLastInsertId()
+            ];
+        } catch (\Throwable $throwable) {
+            // 手动设置异常位置
+            setResultFile($throwable, 2);
+            throw new DbException($throwable->getCode(), $throwable->getMessage());
+        }
+    }
 }

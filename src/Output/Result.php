@@ -7,6 +7,7 @@ use App\Constant\ResultConst;
 use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use Es3\EsConfig;
+use Es3\Utility\Text;
 
 class Result
 {
@@ -102,20 +103,22 @@ class Result
     {
         $result = empty($this->_result) ? (object)[] : $this->_result;
 
-        if (strpos($this->_file ?? '', '.java') !== true) {
-            $file = "file :" .  str_replace(EASYSWOOLE_ROOT, '', $this->_file ?? '');
-            $file = str_replace('.php', '.java', basename($file)) . " [$this->_line]";
-
-            $this->_msg . " {$file}";
+        if (ContextManager::getInstance()->get(\Es3\Constant\ResultConst::FILE_KEY)) {
+            $line = ContextManager::getInstance()->get(\Es3\Constant\ResultConst::LINE_KEY);
+            $file = Text::phpToJava(ContextManager::getInstance()->get(\Es3\Constant\ResultConst::FILE_KEY), $line);
+            $trace = ContextManager::getInstance()->get(\Es3\Constant\ResultConst::TRACE_KEY);
+        } else {
+            $line = $this->_line;;
+            $file = Text::phpToJava($this->_file, $line);
+            $trace = $this->_trace;
         }
 
         $data = [
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
-            ResultConst::MSG_KEY => $this->_msg,
+            ResultConst::MSG_KEY => "{$this->_msg} {$file}",
 //            'file' => $file,
-//            'line' => $this->_line,
-//            ResultConst::TRACE_KEY => $this->_trace,
+//            'line' => $line,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
             'trace_id' => ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE),
         ];

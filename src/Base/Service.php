@@ -65,16 +65,9 @@ trait Service
      * 批量插入
      * @param array $data 二维数组
      */
-    public function insertAll(array $data, ?string $column = ''): array
+    public function insertAll(array $data): array
     {
-        $tableName = $this->dao->getTableName();
-
-        $data = \Es3\Utility\Model::insertAll($tableName, $data);
-
-        $sql = $data[ResultConst::DB_QUERY];
-        $bind = $data[ResultConst::DB_BIND];
-
-        return $this->dao->exec($sql, $bind);
+        return $this->dao->insertAll($data);
     }
 
     /**
