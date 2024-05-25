@@ -9,7 +9,7 @@ class Text
         return str_replace(array("\r\n", "\n"), '', $string);
     }
 
-    public static function phpToJava(string $fileName = '', string $line = ''): ?string
+    public static function phpToJava(?string $fileName = '', ?string $line = ''): ?string
     {
         if (empty($fileName)) {
             return null;
