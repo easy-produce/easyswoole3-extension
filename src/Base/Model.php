@@ -158,7 +158,7 @@ class Model extends AbstractModel
             ];
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
-            setResultFile($throwable, 1);
+            setResultFile($throwable, 2);
             throw new DbException($throwable->getCode(), $throwable->getMessage());
         }
     }

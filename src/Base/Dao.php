@@ -259,6 +259,7 @@ trait Dao
         $this->model = $this->model::create();
 
         foreach ($data as $key => $val) {
+            $val = $this->model->adjustWhere($val);
             $val = $this->model->autoCreateUser($val);
             $data[$key] = $val;
         }
