@@ -148,7 +148,7 @@ class Model extends AbstractModel
             $lastErrorNo = $results->getLastErrorNo();
             $lastError = $results->getLastError();
 
-            if ($lastErrorNo !== 10) {
+            if ($lastErrorNo !== 0) {
                 throw new InfoException(1011, "批量写入失败: " . $lastError);
             }
 
@@ -158,7 +158,7 @@ class Model extends AbstractModel
             ];
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
-            setResultFile($throwable, 2);
+            setResultFile($throwable, 1);
             throw new DbException($throwable->getCode(), $throwable->getMessage());
         }
     }

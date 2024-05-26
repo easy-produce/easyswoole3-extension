@@ -116,8 +116,8 @@ class Result
         $data = [
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
-            ResultConst::MSG_KEY => "{$this->_msg} {$file}",
-//            'file' => $file,
+            ResultConst::MSG_KEY => "{$this->_msg}",
+            'file' => $file,
 //            'line' => $line,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
             'trace_id' => ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE),
