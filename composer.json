@@ -35,6 +35,7 @@
     "smalot/pdfparser": "v0.17.1",
     "phpoffice/phpword": "1.2.0",
     "phpoffice/phpexcel": "1.8.1",
+    "easyswoole/queue": "2.0.*",
     "viest/php-ext-xlswriter-ide-helper": "*",
     "tecnickcom/tcpdf": "6.4.4",
     "ext-simplexml": "*",
