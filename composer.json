@@ -57,7 +57,9 @@
     "victorybiz/geoip-location": "*",
     "gai871013/ip-location": "*",
     "swiftmailer/swiftmailer": "*",
-    "ext-json": "*"
+    "php-amqplib/php-amqplib": "^3.6",
+    "ext-json": "*",
+    "ext-amqp": "*"
   },
   "autoload": {
     "psr-4": {
