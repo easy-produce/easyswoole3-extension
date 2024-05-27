@@ -59,6 +59,7 @@
     "gai871013/ip-location": "*",
     "swiftmailer/swiftmailer": "*",
     "php-amqplib/php-amqplib": "^3.6",
+    "easyswoole/pool": "*",
     "ext-json": "*"
   },
   "autoload": {

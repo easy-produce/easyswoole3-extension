@@ -24,6 +24,5 @@ class EsConst
     /** 框架中存储 */
     const ES_LOG_MYSQL_QUERY = 'ES_LOG_MYSQL_QUERY';
     const ES_TRACE_ID = 'ES_TRACE_ID';
-
-
+    const ES_RABBIT = 'rabbit';
 }

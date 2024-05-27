@@ -5,7 +5,9 @@ use App\Constant\AppConst;
 use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\Http\Request;
+use Es3\Constant\EsConst;
 use Es3\Trace;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 function isProduction(): bool
 {
@@ -201,7 +203,18 @@ function traceCode(): string
     return $traceCode;
 }
 
+function traceId(): string
+{
+    $traceCode = Trace::getRequestId();
+    return $traceCode;
+}
+
 function createUserCode()
+{
+    return identity()[AppConst::IDENTITY_USER_CODE] ?? null;
+}
+
+function createUserId()
 {
     return identity()[AppConst::IDENTITY_USER_CODE] ?? null;
 }
@@ -313,4 +326,33 @@ function isRunRpc(): bool
 function isCrossDomain(): bool
 {
     return (bool)config('cross_domain.is_cross_domain');
+}
+
+//function rabbitMqInvoke(callable $call, float $timeout = null)
+//{
+//    $rabbitPool = \EasySwoole\Pool\Manager::getInstance()->get(EsConst::ES_RABBIT);
+//    if (!$rabbitPool instanceof \Es3\Pool\RabbitPool) {
+//        throw new  \Es3\Exception\ErrorException(10121, "获取rabbitMq连接池异常");
+//    }
+//    return $rabbitPool->invoke($call, $timeout);
+//}
+
+function rabbitMqInstance(float $timeout = null): AMQPStreamConnection
+{
+    $rabbitPool = \EasySwoole\Pool\Manager::getInstance()->get(EsConst::ES_RABBIT);
+    if (!$rabbitPool instanceof \Es3\Pool\RabbitPool) {
+        throw new  \Es3\Exception\ErrorException(10124, "获取rabbitMq连接池异常");
+    }
+
+    return $rabbitPool->defer($timeout);
+}
+
+function redisInstance(float $timeout = null): \EasySwoole\Redis\Redis
+{
+    $redisPool = \EasySwoole\RedisPool\Redis::getInstance()->get(EnvConst::REDIS_KEY);
+    if (!$redisPool instanceof  \EasySwoole\RedisPool\RedisPool) {
+        throw new  \Es3\Exception\ErrorException(10121, "获取redis连接池异常");
+    }
+
+    return $redisPool->defer($timeout);
 }

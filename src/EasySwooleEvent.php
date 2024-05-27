@@ -179,6 +179,7 @@ class EasySwooleEvent
 
                     $redisConf = new \EasySwoole\Redis\Config\RedisConfig($redisConf);
                     \EasySwoole\RedisPool\Redis::getInstance()->register(EnvConst::REDIS_KEY, $redisConf);
+
                 } catch (Exception $e) {
                     throw new ErrorException(1002, 'redis连接失败');
                 }
@@ -195,10 +196,19 @@ class EasySwooleEvent
             Render::getInstance()->getConfig()->setTempDir(EASYSWOOLE_TEMP_DIR);
             Render::getInstance()->attachServer(ServerManager::getInstance()->getSwooleServer());
 
-//            /** 初始化定时任务 */
+            /** 初始化定时任务 */
             \Es3\AutoLoad\Crontab::getInstance()->autoLoad();
-//            /** 初始化自定义进程 */
+            /** 初始化自定义进程 */
             \Es3\AutoLoad\Process::getInstance()->autoLoad();
+
+            /** rabbitMQ 注册 */
+            $rabbitConf = config('rabbit', true) ?? null;
+            if (!superEmpty($rabbitConf)) {
+                // 连接池注册
+                $config = new \EasySwoole\Pool\Config();
+                $rabbitConfig = new \Es3\Queue\Config\RabbitConfig($rabbitConf);
+                \EasySwoole\Pool\Manager::getInstance()->register(new \Es3\Pool\RabbitPool($config, $rabbitConfig), EsConst::ES_RABBIT);
+            }
 
         } catch (\Throwable $throwable) {
             echo "系统发生错误-message:" . $throwable->getMessage() . "\n";
