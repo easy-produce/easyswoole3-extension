@@ -48,21 +48,24 @@ class Middleware
         $origin = current($request->getHeader('origin') ?? null) ?? '';
         $origin = rtrim($origin, '/');
 
-        /** 生产情况的跨域 由 运维处理 */
-        if (!isProduction()) {
+        // /** 生产情况的跨域 由 运维处理 */
+        // if (!isProduction()) {
 
-            $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
-            $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
-            $response->withHeader('Access-Control-Allow-Credentials', 'true');
-        }
+        //     $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
+        //     $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
+        //     $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        // }
 
-        /** 为了兼容有些项目运维不处理跨域 */
-        if(isProduction() && isCrossDomain() ){
-            $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
-            $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
-            $response->withHeader('Access-Control-Allow-Credentials', 'true');
-        }
+        // /** 为了兼容有些项目运维不处理跨域 */
+        // if(isProduction() && isCrossDomain() ){
+        //     $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
+        //     $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
+        //     $response->withHeader('Access-Control-Allow-Credentials', 'true');
+        // }
 
+        $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
+        $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
+        $response->withHeader('Access-Control-Allow-Credentials', 'true');
         $response->withHeader('Access-Control-Allow-Headers', $headers);
         if ($request->getMethod() === 'OPTIONS') {
             $response->withStatus(Status::CODE_OK);

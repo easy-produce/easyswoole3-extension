@@ -7,6 +7,7 @@ use App\Constant\EnvConst;
 use App\Module\Callback\Queue\TaskErrorQueue;
 use App\Module\Callback\Queue\TaskFailQueue;
 use App\Module\Callback\Queue\TaskInvalidQueue;
+use App\Pool\RabbitPool;
 use App\Rpc\Oms;
 use EasySwoole\AtomicLimit\AtomicLimit;
 use EasySwoole\Component\Context\ContextManager;
