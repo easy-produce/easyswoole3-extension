@@ -28,8 +28,8 @@ class Policy
             $policy->addPath($key, $conf);
         }
 
-        echo Utility::displayItem($isAuthKey, jsonEncode($policyConf));
-        echo "\n";
+//        echo Utility::displayItem($isAuthKey, jsonEncode($policyConf));
+//        echo "\n";
 
         $this->initialize[$name] = $policy;
 
