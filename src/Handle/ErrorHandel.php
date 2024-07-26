@@ -31,7 +31,7 @@ class ErrorHandel
          * [8] E_NOTICE (integer) 运行时提醒。运行时提醒，代码本身是正确的但是程序可以继续运行。
          */
         $isThrow = true;
-        if (isProduction() && in_array($errorCode, [2, 8])) {
+        if (in_array($errorCode, [2, 8])) {
             $isThrow = false;
         }
 
