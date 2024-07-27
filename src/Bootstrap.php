@@ -20,6 +20,11 @@ class Bootstrap
         $targetOrm = "$vendor/easyswoole/orm/";
         File::copyDirectory($orm, $targetOrm);
 
+        /** pimple处理 */
+        $pimple = "$esVendor/pimple/pimple/";
+        $targetPimple = "$vendor/pimple/pimple/";
+        File::copyDirectory($pimple, $targetPimple);
+
         /** easyswoole 处理 */
         $easyswoole = EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/update/php8/easyswoole';
         $targetEasyswoole = EASYSWOOLE_ROOT . '/easyswoole';
