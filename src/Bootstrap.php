@@ -21,9 +21,14 @@ class Bootstrap
         File::copyDirectory($orm, $targetOrm);
 
         /** pimple处理 */
-        $pimple = "$esVendor/pimple/pimple/";
-        $targetPimple = "$vendor/pimple/pimple/";
-        File::copyDirectory($pimple, $targetPimple);
+        $pimple = "$esVendor/pimple/pimple/src/Pimple/Container.php";
+        $targetPimple = "$vendor/pimple/pimple/src/Pimple/Container.php";
+        if (file_exists($targetPimple)) {
+            unlink($targetPimple);
+        }
+        if (file_exists($pimple)) {
+            copy($pimple, $targetPimple);
+        }
 
         /** easyswoole 处理 */
         $easyswoole = EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/update/php8/easyswoole';
