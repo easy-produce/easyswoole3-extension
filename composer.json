@@ -60,7 +60,11 @@
     "swiftmailer/swiftmailer": "*",
     "php-amqplib/php-amqplib": "^3.6",
     "easyswoole/pool": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "alibabacloud/imageseg-20191230": "*",
+    "psr/log": "1.1.4",
+    "phpoffice/phpspreadsheet": "1.25",
+    "easyswoole/wechat": "2.x"
   },
   "autoload": {
     "psr-4": {
