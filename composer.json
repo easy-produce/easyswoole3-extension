@@ -25,7 +25,7 @@
     "easyswoole/orm": "1.5.4",
     "easyswoole/http-client": "1.4.*",
     "cium/weworkapi": "*",
-    "pimple/pimple": "v3.3.*",
+    "pimple/pimple": "v3.3.1",
     "psr/simple-cache": "1.0.*",
     "smarty/smarty": "v3.1.36",
     "nikic/fast-route": "v1.3.*",
