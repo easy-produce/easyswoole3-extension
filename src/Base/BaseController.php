@@ -286,9 +286,12 @@ class BaseController extends Controller
     protected function onRequest(?string $action): ?bool
     {
         /** 修复路由参数不显示的问题 */
-        $query = ContextManager::getInstance()->get(AbstractRouter::PARSE_PARAMS_CONTEXT_KEY);
-        if (!superEmpty($query)) {
-            $this->request()->withQueryParams($query);
+        $nQuery = ContextManager::getInstance()->get(AbstractRouter::PARSE_PARAMS_CONTEXT_KEY);
+        $query = $this->request()->getQueryParams();
+
+        if (!superEmpty($nQuery)) {
+            $nQuery = array_merge($nQuery, $query);
+            $this->request()->withQueryParams($nQuery);
         }
 
         try {
