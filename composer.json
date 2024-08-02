@@ -31,7 +31,7 @@
     "nikic/fast-route": "v1.3.*",
     "firebase/php-jwt": "5.2.*",
     "friendsofphp/php-cs-fixer": "*",
-    "chillerlan/php-qrcode": "5.0.2",
+    "chillerlan/php-qrcode": "4.3.3",
     "smalot/pdfparser": "v0.17.1",
     "phpoffice/phpword": "1.2.0",
     "phpoffice/phpexcel": "1.8.1",
