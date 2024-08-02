@@ -32,4 +32,18 @@ class EasyLock
         // 释放锁定
         return flock($this->fp, LOCK_UN);
     }
+
+    /**
+     * 尝试加锁
+     * @return void
+     */
+    public function trylock()
+    {
+        $flg = flock($this->fp, LOCK_EX | LOCK_NB);
+        if (!$flg) {
+            throw new ErrorException(1052, "加锁失败");
+        }
+
+        return $this;
+    }
 }

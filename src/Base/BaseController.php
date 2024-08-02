@@ -10,6 +10,7 @@ use EasySwoole\AtomicLimit\AtomicLimit;
 use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Core;
+use EasySwoole\Http\AbstractInterface\AbstractRouter;
 use EasySwoole\Http\AbstractInterface\Controller;
 use EasySwoole\Http\Exception\ParamAnnotationValidateError;
 use EasySwoole\Http\Message\Status;
@@ -284,6 +285,12 @@ class BaseController extends Controller
 
     protected function onRequest(?string $action): ?bool
     {
+        /** 修复路由参数不显示的问题 */
+        $query = ContextManager::getInstance()->get(AbstractRouter::PARSE_PARAMS_CONTEXT_KEY);
+        if (!superEmpty($query)) {
+            $this->request()->withQueryParams($query);
+        }
+
         try {
             /** 验证器代理 */
             $validateProxy = new ValidateProxy(get_called_class());
