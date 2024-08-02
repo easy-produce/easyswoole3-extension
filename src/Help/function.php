@@ -83,7 +83,7 @@ function clientIp(): ?string
         return null;
     }
     // 优先在x-forwarded-for获取
-    $xForwardedFor = headers()['x-forwarded-for'] ?? null;
+    $xForwardedFor = headers()['x-forwarded-for'] ?? '';
     $ip = current(explode(',', $xForwardedFor)) ?? null;
 
     if (!$ip) {
