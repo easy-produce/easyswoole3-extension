@@ -70,8 +70,11 @@ class LoggerHandel implements LoggerInterface
         $fileDate = date('Ymd', time());
         $filePath = "{$logPath}/{$fileDate}.log";
 
+        // 代码中增加用户Id
+        $accountId = empty(createUserId()) ? -1 : createUserId();
+
         $data = [
-            'title' => "[{$date}][{$project}][{$category}][{$levelStr}][{$traceId}]",
+            'title' => "[{$date}][{$project}][{$category}][{$accountId}][{$levelStr}][{$traceId}]",
             'content' => Text::clearEscape($msg),
             'file' => "{$this->getFile()}",
             'server' => [
