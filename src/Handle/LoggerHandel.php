@@ -82,7 +82,9 @@ class LoggerHandel implements LoggerInterface
                 'is_master' => isMaster(),
                 'is_http' => isHttp(),
                 'request' => $request,
-                'trace_id' => $this->getTrace()
+                'trace_id' => traceId(),
+//                'trace' => implode(',', $this->getTrace() ?? []),
+                'trace' => $this->getTrace()
             ],
         ];
 
