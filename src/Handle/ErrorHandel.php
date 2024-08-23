@@ -23,6 +23,11 @@ class ErrorHandel
 
         $errorMsg = "{$description} {$file}";
 
+        // 如果是vendor抛出的错误，先忽略
+        if (strpos($file, 'vendor') !== false) {
+            return;
+        }
+
         Logger::getInstance()->log($errorMsg, LoggerInterface::LOG_LEVEL_ERROR, "error_handel");
 
         /**
