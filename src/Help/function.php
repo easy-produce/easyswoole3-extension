@@ -328,6 +328,39 @@ function isCrossDomain(): bool
     return (bool)config('cross_domain.is_cross_domain');
 }
 
+function getServerType(): string
+{
+    return isMaster() ? 'master' : 'slave';
+}
+
+function getServerIp(): string
+{
+    $ipList = swoole_get_local_ip();
+    $ip = implode('-', $ipList);
+
+    if (superEmpty($ip)) {
+        return '0.0.0.0';
+    }
+
+    return $ip;
+}
+
+function getServerTempName(string $type = null): string
+{
+    $tempName = \EasySwoole\Component\Di::getInstance()->get(EsConst::ES_SERVER_TEMP_NAME);
+
+    if ($type) {
+        $tempName = "{$type}-{$tempName}";
+    }
+    
+    return $tempName;
+}
+
+function getServerRunTime(): string
+{
+    return \EasySwoole\Component\Di::getInstance()->get(EsConst::ES_SERVER_RUN_TIME);
+}
+
 //function rabbitMqInvoke(callable $call, float $timeout = null)
 //{
 //    $rabbitPool = \EasySwoole\Pool\Manager::getInstance()->get(EsConst::ES_RABBIT);
@@ -350,9 +383,10 @@ function rabbitMqInstance(float $timeout = null): AMQPStreamConnection
 function redisInstance(float $timeout = null): \EasySwoole\Redis\Redis
 {
     $redisPool = \EasySwoole\RedisPool\Redis::getInstance()->get(EnvConst::REDIS_KEY);
-    if (!$redisPool instanceof  \EasySwoole\RedisPool\RedisPool) {
+    if (!$redisPool instanceof \EasySwoole\RedisPool\RedisPool) {
         throw new  \Es3\Exception\ErrorException(10121, "获取redis连接池异常");
     }
 
     return $redisPool->defer($timeout);
 }
+

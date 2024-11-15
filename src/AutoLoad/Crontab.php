@@ -68,7 +68,7 @@ class Crontab
                         // 注册定时任务
                         $crontab->register(new $class);
 
-                        echo Utility::displayItem('Crontab', $class);
+                        echo Utility::displayItem('CRONTAB', $class);
                         echo "\n";
                     }
                 }

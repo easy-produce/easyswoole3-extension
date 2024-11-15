@@ -2,6 +2,8 @@
 
 namespace Es3\AutoLoad;
 
+use EasySwoole\Component\TableManager;
+use Swoole\Table;
 use App\Constant\AppConst;
 use App\Constant\EnvConst;
 use Es3\Constant\EsConst;
@@ -42,7 +44,7 @@ class Process
                     /** 获取类名 */
                     $className = basename($autoLooadFile, '.php');
 
-                    /** 加载定时任务 */
+                    /** 加载自定义进程 */
                     $class = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_PROCESS_NAME . "\\" . $className;
                     if (class_exists($class)) {
 

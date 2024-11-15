@@ -106,9 +106,11 @@ class EasySwooleEvent
             /** 注入shutdown异常处理 */
             \EasySwoole\Component\Di::getInstance()->set(\EasySwoole\EasySwoole\SysConst::SHUTDOWN_FUNCTION, [ShutdownHandel::class, 'run']);
 
-            /** 注入shutdown异常处理 */
-            \EasySwoole\Component\Di::getInstance()->set(\EasySwoole\EasySwoole\SysConst::ERROR_HANDLER, [ErrorHandel::class, 'run']);
+            /** 初始化服务临时名称 */
+            \EasySwoole\Component\Di::getInstance()->set(EsConst::ES_SERVER_TEMP_NAME, md5(uniqid(microtime(true), true)));
 
+            /** 初始化服务器启动时间 */
+            \EasySwoole\Component\Di::getInstance()->set(EsConst::ES_SERVER_RUN_TIME, nowDate('Y-m-d H:i:s'));
 
             // onRequest
             \EasySwoole\Component\Di::getInstance()->set(\EasySwoole\EasySwoole\SysConst::HTTP_GLOBAL_ON_REQUEST,
