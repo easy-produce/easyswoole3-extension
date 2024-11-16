@@ -19,13 +19,6 @@ class Process
     public function autoLoad()
     {
         try {
-            if (!isRunProcess()) {
-                echo Utility::displayItem('Process', '当前环境为SLAVE 不会执行自定义进程');
-                echo "\n";
-                return;
-            }
-
-            $crontabLoads = [];
             $path = EASYSWOOLE_ROOT . '/' . EsConst::ES_DIRECTORY_APP_NAME . '/' . EsConst::ES_DIRECTORY_MODULE_NAME . '/';
             $modules = EsUtility::sancDir($path);
 
@@ -53,6 +46,14 @@ class Process
 
                         $processName = EnvConst::SERVICE_NAME . ".{$className}";
                         $processGroup = EnvConst::SERVICE_NAME . ".{$module}";
+
+                        // 非master服务器也执行一些进程
+                        if (!isRunProcess()) {
+                            $runEnv = $process->getConstant(EsConst::ES_RUN_ENV);
+                            if (strtoupper($runEnv) != 'ALL') {
+                                continue;
+                            }
+                        }
 
                         $conf->setProcessName($processName);
                         $conf->setProcessGroup($processGroup);

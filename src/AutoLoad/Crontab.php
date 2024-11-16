@@ -19,17 +19,11 @@ class Crontab
 
     public function autoLoad()
     {
-        if (!isRunCrontab()) {
-            echo Utility::displayItem('Crontab', '当前环境为SLAVE 不会执行定时任务');
-            echo "\n";
-            return;
-        }
-
         // 创建定时任务
         $crontabConfig = new \EasySwoole\Crontab\Config();
         $crontabConfig->setTempDir(EASYSWOOLE_TEMP_DIR);
         $crontabConfig->setServerName(strtolower(EnvConst::SERVICE_NAME) . "_crontab");
-        $crontabConfig->setWorkerNum(3);
+        $crontabConfig->setWorkerNum(8);
         $crontab = \EasySwoole\EasySwoole\Crontab\Crontab::getInstance($crontabConfig);
 
         // 设置定时任务的回调
@@ -64,6 +58,15 @@ class Crontab
                     $class = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_CRONTAB_NAME . "\\" . $className;
 
                     if (class_exists($class)) {
+
+                        // 非master服务器也执行一些定时
+                        if (!isRunCrontab()) {
+                            $process = new \ReflectionClass($class);
+                            $runEnv = $process->getConstant(EsConst::ES_RUN_ENV);
+                            if (strtoupper($runEnv) != 'ALL') {
+                                continue;
+                            }
+                        }
 
                         // 注册定时任务
                         $crontab->register(new $class);

@@ -188,11 +188,11 @@ class EasySwooleEvent
                 }
             }
 
-//            /** fast cache */
-//            $config = new \EasySwoole\FastCache\Config();
-//            $config->setTempDir(config('TEMP_DIR'));
-//            $server = ServerManager::getInstance()->getSwooleServer();
-//            Cache::getInstance($config)->attachToServer($server);
+            /** fast cache */
+            $config = new \EasySwoole\FastCache\Config();
+            $config->setTempDir(config('TEMP_DIR'));
+            $server = ServerManager::getInstance()->getSwooleServer();
+            Cache::getInstance($config)->attachToServer($server);
 
             /** todo html模板 因为得输出html模板 */
             Render::getInstance()->getConfig()->setRender(new Smarty());
