@@ -26,6 +26,7 @@ class Crontab
         $crontabConfig->setWorkerNum(8);
         $crontab = \EasySwoole\EasySwoole\Crontab\Crontab::getInstance($crontabConfig);
 
+
         // 设置定时任务的回调
         $crontabConfig->setOnException(function (\Throwable $throwable) {
             // 定时任务执行发生异常时触发（如果未在定时任务类的 onException 中进行捕获异常则会触发此异常回调）

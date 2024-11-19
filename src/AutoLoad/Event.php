@@ -19,41 +19,72 @@ class Event
     public function autoLoad()
     {
         try {
-            $crontabLoads = [];
             $path = EASYSWOOLE_ROOT . '/' . EsConst::ES_DIRECTORY_APP_NAME . '/' . EsConst::ES_DIRECTORY_MODULE_NAME . '/';
             $modules = EsUtility::sancDir($path);
 
             foreach ($modules as $module) {
 
-                \Es3\Event::getInstance()->set($module, function ($module, $function, ...$args) use ($path) {
+                $eventPath = $path . $module . '/' . EsConst::ES_DIRECTORY_EVENT_NAME . '/';
+                $eventFiles = EsUtility::sancDir($eventPath);
 
-                    $module = ucwords($module);
-                    $eventPath = $path . $module . '/' . EsConst::ES_FILE_NAME_EVENT;
-                    if (!file_exists($eventPath)) {
-                        Logger::getInstance()->notice("没有找到" . $eventPath . "事件文件");
-                        return;
-                    }
-                    $namespace = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_EVENT_NAME;
-                    if (!class_exists($namespace)) {
-                        Logger::getInstance()->notice("没有找到" . $namespace . "事件命名空间");
-                        return;
+                foreach ($eventFiles as $key => $eventFile) {
+
+                    $autoLooadFile = $eventPath . $eventFile;
+                    if (!file_exists($autoLooadFile)) {
+                        continue;
                     }
 
-                    $ref = new \ReflectionClass($namespace);
-                    if (!($ref->hasMethod($function) && $ref->getMethod($function)->isPublic() && !$ref->getMethod($function)->isStatic())) {
-                        Logger::getInstance()->notice("没有找到" . $namespace . "的run方法");
-                        return;
+                    $className = basename($autoLooadFile, '.php');
+                    $eventName = basename($autoLooadFile, EsConst::ES_DIRECTORY_EVENT_NAME . ".php");
+
+                    $class = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_EVENT_NAME . "\\" . $className;
+                    if (class_exists($class)) {
+                        $module = ucwords($module);
+
+                        /** 获取所有方法 */
+                        $ref = new \ReflectionClass($class);
+                        $methods = $ref->getMethods();
+                        foreach ($methods as $key => $method) {
+
+                            $function = $method->getName();
+                            $name = strtolower($module) . '.' . strtolower($eventName) . '.' . $function;
+
+                            if (in_array($function, ['getInstance'])) {
+                                continue;
+                            }
+
+                            /** 是否存在 */
+                            if (!$ref->hasMethod($function)) {
+                                continue;
+                            }
+
+                            /** 是否可见 */
+                            if (!$ref->getMethod($function)->isPublic()) {
+                                continue;
+                            }
+
+                            /** 是否静态 */
+                            if (!$ref->getMethod($function)->isStatic()) {
+                                continue;
+                            }
+
+//                            $class::getInstance()->set(strtolower($name), function () {
+//                                var_dump('11');
+//                            });
+                            var_dump($name, '$name');
+                            $class::getInstance()->set(strtolower($name), function () {
+                                $class::$function();
+                            });
+                            echo Utility::displayItem('Event', strtolower($name));
+                            echo "\n";
+                        }
                     }
+                }
 
-                    $namespace = new $namespace();
-                    $namespace->$function(...$args);
-                });
 
-                echo Utility::displayItem('Event', strtolower($module));
-                echo "\n";
             }
         } catch (\Throwable $throwable) {
-            echo 'Event Initialize Fail :' . $throwable->getMessage();
+            echo 'Event Initialize Fail :' . $throwable->getMessage() . $throwable->getFile() . $throwable->getLine();
         }
     }
 }

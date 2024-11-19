@@ -97,6 +97,9 @@ class EasySwooleEvent
             /** 路由初始化 */
             \Es3\AutoLoad\Router::getInstance()->autoLoad();
 
+            /** 事件加载 */
+            \Es3\AutoLoad\Event::getInstance()->autoLoad();;
+
             /** 配置控制器命名空间 */
             Di::getInstance()->set(SysConst::HTTP_CONTROLLER_NAMESPACE, 'App\\Controller\\');
 
