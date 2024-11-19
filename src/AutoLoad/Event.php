@@ -68,14 +68,10 @@ class Event
                                 continue;
                             }
 
-//                            $class::getInstance()->set(strtolower($name), function () {
-//                                var_dump('11');
-//                            });
-                            var_dump($name, '$name');
-                            $class::getInstance()->set(strtolower($name), function () {
+                            $class::getInstance()->set($name, function () {
                                 $class::$function();
                             });
-                            echo Utility::displayItem('Event', strtolower($name));
+                            echo Utility::displayItem('Event', $name);
                             echo "\n";
                         }
                     }
