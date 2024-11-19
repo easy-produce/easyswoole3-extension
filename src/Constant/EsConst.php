@@ -33,4 +33,6 @@ class EsConst
     const ES_AUTULOAD_PROCESS = 'ES_AUTULOAD_PROCESS';
     const ES_AUTULOAD_CRONTAB = 'ES_AUTULOAD_CRONTAB';
     const ES_RUN_ENV = 'RUN_ENV';
+    const ES_EVENT_CRONTAB_EXCEPTION = 'ops.crontab.exception';
+    const ES_EVENT_PROCESS_EXCEPTION = 'ops.process.exception';
 }

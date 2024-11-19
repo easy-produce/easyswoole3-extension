@@ -68,8 +68,8 @@ class Event
                                 continue;
                             }
 
-                            $class::getInstance()->set($name, function () {
-                                $class::$function();
+                            $class::getInstance()->set($name, function (...$args) use ($class, $function) {
+                                $class::$function(...$args);
                             });
                             echo Utility::displayItem('Event', $name);
                             echo "\n";
