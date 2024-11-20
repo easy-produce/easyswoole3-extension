@@ -46,7 +46,6 @@ class Queue
                     $class = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_QUEUE_NAME . "\\" . $className;
 
                     if (class_exists($class)) {
-
                         $queueName = $className . '_' . $module;
                         $redisPool = \EasySwoole\RedisPool\Redis::getInstance()->get(EnvConst::REDIS_KEY);
                         $class::getInstance(new \EasySwoole\Queue\Driver\Redis($redisPool, $queueName));
