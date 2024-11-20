@@ -26,21 +26,22 @@ abstract class BaseProcess extends AbstractProcess
         return $processConfig;
     }
 
+    /*
+     * 该回调可选
+     * 当有主进程对子进程发送消息的时候，会触发的回调，触发后，务必使用
+     * $process->read()来读取消息
+    */
     protected function onPipeReadable(Process $process)
     {
-        /*
-         * 该回调可选
-         * 当有主进程对子进程发送消息的时候，会触发的回调，触发后，务必使用
-         * $process->read()来读取消息
-         */
     }
 
+    /*
+     * 该回调可选
+     * 当该进程退出的时候，会执行该回调
+     */
     protected function onShutDown()
     {
-        /*
-         * 该回调可选
-         * 当该进程退出的时候，会执行该回调
-         */
+        ProcessEvent::getInstance()->hook(EsConst::ES_EVENT_PROCESS_SHUTDOWN, $this, $throwable);
     }
 
     protected function onException(\Throwable $throwable, ...$args)

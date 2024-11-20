@@ -35,4 +35,5 @@ class EsConst
     const ES_RUN_ENV = 'RUN_ENV';
     const ES_EVENT_CRONTAB_EXCEPTION = 'ops.crontab.exception';
     const ES_EVENT_PROCESS_EXCEPTION = 'ops.process.exception';
+    const ES_EVENT_PROCESS_SHUTDOWN = 'ops.process.shutdown';
 }
