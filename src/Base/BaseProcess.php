@@ -41,7 +41,7 @@ abstract class BaseProcess extends AbstractProcess
      */
     protected function onShutDown()
     {
-        ProcessEvent::getInstance()->hook(EsConst::ES_EVENT_PROCESS_SHUTDOWN, $this, $throwable);
+        ProcessEvent::getInstance()->hook(EsConst::ES_EVENT_PROCESS_SHUTDOWN, $this);
     }
 
     protected function onException(\Throwable $throwable, ...$args)
