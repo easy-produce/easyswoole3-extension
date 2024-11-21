@@ -30,8 +30,8 @@ class EsConst
     const ES_SERVER_IP = 'ES_SERVER_IP';
     const ES_SERVER_TYPE = 'ES_SERVER_TYPE';
     const ES_SERVER_RUN_TIME = 'ES_SERVER_RUN_TIME';
-    const ES_AUTOLOAD_PROCESS = 'ES_AUTOLOAD_PROCESS';
-    const ES_AUTOLOAD_CRONTAB = 'ES_AUTOLOAD_CRONTAB';
+    const ES_AUTULOAD_PROCESS = 'ES_AUTULOAD_PROCESS';
+    const ES_AUTULOAD_CRONTAB = 'ES_AUTULOAD_CRONTAB';
     const ES_RUN_ENV = 'RUN_ENV';
     const ES_EVENT_CRONTAB_EXCEPTION = 'ops.crontab.exception';
     const ES_EVENT_PROCESS_EXCEPTION = 'ops.process.exception';
