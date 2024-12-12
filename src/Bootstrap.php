@@ -6,7 +6,7 @@ use Es3\Utility\File;
 
 class Bootstrap
 {
-    public static function run()
+    public static function run(bool $EasySwooleEvent = true)
     {
         /** 设置配置文件 */
         \EasySwoole\EasySwoole\Core::getInstance()->runMode('produce');
@@ -31,17 +31,21 @@ class Bootstrap
         }
 
         /** easyswoole 处理 */
-        $easyswoole = EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/update/php8/easyswoole';
-        $targetEasyswoole = EASYSWOOLE_ROOT . '/easyswoole';
-        if (!file_exists($targetEasyswoole) || (file_get_contents($easyswoole) !== file_get_contents($targetEasyswoole))) {
-            File::copyFile($easyswoole, $targetEasyswoole);
+        if ($EasySwooleEvent) {
+            $easyswoole = EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/update/php8/easyswoole';
+            $targetEasyswoole = EASYSWOOLE_ROOT . '/easyswoole';
+            if (!file_exists($targetEasyswoole) || (file_get_contents($easyswoole) !== file_get_contents($targetEasyswoole))) {
+                File::copyFile($easyswoole, $targetEasyswoole);
+            }
         }
 
         /** easySwooleEvent 处理 */
-        $easySwooleEvent = EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/update/php8/EasySwooleEvent.php';
-        $targetEasySwooleEvent = EASYSWOOLE_ROOT . '/EasySwooleEvent.php';
-        if (!file_exists($targetEasySwooleEvent) || (file_get_contents($easySwooleEvent) !== file_get_contents($targetEasySwooleEvent))) {
-            File::copyFile($easySwooleEvent, $targetEasySwooleEvent);
+        if ($EasySwooleEvent) {
+            $easySwooleEvent = EASYSWOOLE_ROOT . '/vendor/easy-produce/easyswoole3-extension/src/update/php8/EasySwooleEvent.php';
+            $targetEasySwooleEvent = EASYSWOOLE_ROOT . '/EasySwooleEvent.php';
+            if (!file_exists($targetEasySwooleEvent) || (file_get_contents($easySwooleEvent) !== file_get_contents($targetEasySwooleEvent))) {
+                File::copyFile($easySwooleEvent, $targetEasySwooleEvent);
+            }
         }
     }
 }
