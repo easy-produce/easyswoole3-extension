@@ -3,9 +3,11 @@
 namespace Es3\Base;
 
 use App\Constant\ResultConst;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\ORM\Db\ClientInterface;
 use EasySwoole\ORM\DbManager;
+use Es3\Constant\EsConst;
 use Es3\Exception\ErrorException;
 use EasySwoole\Mysqli\QueryBuilder;
 use Es3\Exception\InfoException;
@@ -22,6 +24,8 @@ trait Dao
         $params = $this->adjustWhere($params);
         $params = $this->model->autoCreateUser($params);
 
+        ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
+
         return $this->model::create($params)->save();
     }
 
@@ -32,6 +36,7 @@ trait Dao
         }
         $this->model = $this->model::create();
         $res = $this->model->delete($data, true);
+        ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
         return intval($res);
     }
 
@@ -65,6 +70,8 @@ trait Dao
                 throw new InfoException(1005, $model->lastQueryResult()->getLastError());
             }
 
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
+
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -77,6 +84,8 @@ trait Dao
     {
         $LogicDelete = $this->model->getLogicDelete();
         $where = array_merge($where, $LogicDelete);
+
+        ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
 
         return $this->model::create()->field($field)->get($where);
     }
@@ -91,6 +100,8 @@ trait Dao
             if ($lastErrorNo !== 0) {
                 throw new InfoException(1004, $model->lastQueryResult()->getLastError());
             }
+
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
 
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
@@ -121,6 +132,8 @@ trait Dao
                 throw new InfoException(1005, $model->lastQueryResult()->getLastError());
             }
 
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
+
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
             setResultFile($throwable, 1);
@@ -132,6 +145,7 @@ trait Dao
     {
         try {
             $row = $this->model::create()->order($field, 'DESC')->get();
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
             return $row->toArray() ?? [];
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -146,6 +160,7 @@ trait Dao
             $schemaInfo = $this->model->schemaInfo();
             $res = $this->model::create()->query((new QueryBuilder())->raw("select auto_increment from information_schema.tables where table_name = '" . $schemaInfo->getTable() . "'"));
 
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
             return $res[0]['auto_increment'] ?? null;
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -159,6 +174,7 @@ trait Dao
         try {
             $schemaInfo = $this->model->schemaInfo();
             $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
             setResultFile($throwable, 2);
@@ -212,6 +228,7 @@ trait Dao
             $list = $model->field($fields)->withTotalCount()->all($where);
             $total = $model->lastQueryResult()->getTotalCount();
 
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
             return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -232,6 +249,7 @@ trait Dao
                 throw new InfoException(1063, "无法按{$column}进行切换状态 数据表{$tableName}不存在{$column}字段");
             }
 
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
             return $this->update([$column => $switchRule], $ids);
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -246,6 +264,7 @@ trait Dao
             $schemaInfo = $this->model->schemaInfo();
             $this->model = $this->model::create();
             $this->model->query((new QueryBuilder())->raw('TRUNCATE TABLE ' . $schemaInfo->getTable()));
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
             setResultFile($throwable, 2);
@@ -263,6 +282,8 @@ trait Dao
             $val = $this->model->autoCreateUser($val);
             $data[$key] = $val;
         }
+
+        ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
 
         $result = $this->model->insertAll($data, $column);
         return $result;
@@ -317,6 +338,8 @@ trait Dao
                 return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
             }
 
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
+
             return $list;
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -335,6 +358,8 @@ trait Dao
             // 第二个参数 raw  指定true，表示执行原生sql
             // 第三个参数 connectionName 指定使用的连接名，默认 default
             $results = DbManager::getInstance()->query($queryBuild, $raw, $connection);
+
+            ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD)->count_mysql++;
 
             $lastErrorNo = $results->getLastErrorNo();
             $lastError = $results->getLastError();

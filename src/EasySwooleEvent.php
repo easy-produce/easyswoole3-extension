@@ -127,6 +127,11 @@ class EasySwooleEvent
 
                     ContextManager::getInstance()->set(EsConst::ES_LOG_MYSQL_QUERY, new \stdClass());
 
+                    /** 初始化运行记录 */
+                    $std = new \stdClass();
+                    $std->request_time = time();
+                    ContextManager::getInstance()->set(EsConst::ES_RUNNING_RECORD, $std);
+                    
                     /** 请求唯一标识  */
                     Trace::createRequestId();
 
