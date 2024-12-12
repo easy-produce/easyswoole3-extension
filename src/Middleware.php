@@ -13,6 +13,7 @@ use EasySwoole\Http\Request;
 use \EasySwoole\Http\Response;
 
 use EasySwoole\Log\LoggerInterface;
+use Es3\Constant\EsConst;
 use Es3\Exception\ErrorException;
 use Es3\Handle\LoggerHandel;
 use Es3\Utility\File;
@@ -27,6 +28,17 @@ class Middleware
 
         /** 空参数过滤 */
         $self->clearEmptyParams($request, $response);
+
+        /** 执行客户端反射 */
+        $className = EsConst::ES_APP_EVENT;
+        $function = 'onRequest';
+        if (class_exists($className)) {
+            $ref = new \ReflectionClass($className);
+            if ($ref->hasMethod($function)) {
+                $instance = $ref->newInstance();
+                $instance->$function($request, $response);
+            }
+        }
     }
 
     public static function afterRequest(Request $request, Response $response)
@@ -34,6 +46,17 @@ class Middleware
         $self = new self();
         /** 跨域注入 */
         $self->crossDomain($request, $response);
+
+        /** 执行客户端反射 */
+        $className = EsConst::ES_APP_EVENT;
+        $function = 'onResponse';
+        if (class_exists($className)) {
+            $ref = new \ReflectionClass($className);
+            if ($ref->hasMethod($function)) {
+                $instance = $ref->newInstance();
+                $instance->$function($request, $response);
+            }
+        }
     }
 
     private function crossDomain(Request $request, Response $response)

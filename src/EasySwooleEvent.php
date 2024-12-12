@@ -131,10 +131,10 @@ class EasySwooleEvent
                     $std = new \stdClass();
                     $std->request_time = time();
                     ContextManager::getInstance()->set(EsConst::ES_RUNNING_RECORD, $std);
-                    
+
                     /** 请求唯一标识  */
                     Trace::createRequestId();
-
+                    
                     /** 中间件 */
                     Middleware::onRequest($request, $response);
                 });
