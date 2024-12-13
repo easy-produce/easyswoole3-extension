@@ -352,7 +352,7 @@ function getServerTempName(string $type = null): string
     if ($type) {
         $tempName = "{$type}-{$tempName}";
     }
-    
+
     return $tempName;
 }
 
@@ -388,5 +388,16 @@ function redisInstance(float $timeout = null): \EasySwoole\Redis\Redis
     }
 
     return $redisPool->defer($timeout);
+}
+
+function runningRecordAdd(string $field)
+{
+    if (!isHttp()) {
+        return;
+    }
+    $runningRecord = ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD);
+    if (!empty($runningRecord)) {
+        $runningRecord->$field++;
+    }
 }
 
