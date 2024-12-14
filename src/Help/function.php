@@ -2,8 +2,10 @@
 
 use App\Constant\EnvConst;
 use App\Constant\AppConst;
+use EasySwoole\Component\AtomicManager;
 use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
+use EasySwoole\FastCache\Cache;
 use EasySwoole\Http\Request;
 use Es3\Constant\EsConst;
 use Es3\Trace;
