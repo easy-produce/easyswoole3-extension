@@ -392,12 +392,11 @@ function redisInstance(float $timeout = null): \EasySwoole\Redis\Redis
 
 function runningRecordAdd(string $field)
 {
-    if (!isHttp()) {
-        return;
-    }
-    $runningRecord = ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD);
-    if (!empty($runningRecord)) {
-        $runningRecord->$field++;
+    $traceId = \Swoole\Coroutine::getContext()['traceId'];
+    $atomic = AtomicManager::getInstance()->get($traceId);
+
+    if ($atomic) {
+        $atomic->add(1);
     }
 }
 
