@@ -133,7 +133,8 @@ class EasySwooleEvent
                     ContextManager::getInstance()->set(EsConst::ES_RUNNING_RECORD, $std);
 
                     /** 请求唯一标识  */
-                    Trace::createRequestId();
+                    $traceId = Trace::createRequestId();
+                    \Swoole\Coroutine::getContext()['traceId'] = $traceId;
                     
                     /** 中间件 */
                     Middleware::onRequest($request, $response);

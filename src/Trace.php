@@ -34,9 +34,10 @@ class Trace
     /**
      * @throws \EasySwoole\Component\Context\Exception\ModifyError
      */
-    public static function createRequestId(): void
+    public static function createRequestId()
     {
-//        Di::getInstance()->set(AppConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
-        ContextManager::getInstance()->set(AppConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
+        $traceId = md5(uniqid(microtime(true), true));
+        ContextManager::getInstance()->set(AppConst::DI_TRACE_CODE, $traceId);
+        return $traceId;
     }
 }
