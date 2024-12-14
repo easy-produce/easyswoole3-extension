@@ -428,7 +428,6 @@ function easyGo(callable $callable, ...$args)
     go(function () use ($callable, $traceId, $args) {
         // 写入 traceId 到协程上下文中
         \Swoole\Coroutine::getContext()['traceId'] = $traceId;
-        \Swoole\Coroutine::getContext()['count_mysql'] = 0;
         // 调用回调函数并传递参数
         call_user_func_array($callable, $args);
     });
