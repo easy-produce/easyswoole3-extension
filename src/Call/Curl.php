@@ -55,6 +55,7 @@ class Curl extends HttpClient
             $this->is200($response);
         }
 
+        setAtomicByTraceId('count_curl');
         return $response;
     }
 
@@ -66,6 +67,7 @@ class Curl extends HttpClient
             $this->is200($response);
         }
 
+        setAtomicByTraceId('count_curl');
         return $response;
     }
 
@@ -77,6 +79,7 @@ class Curl extends HttpClient
             $this->is200($response);
         }
 
+        setAtomicByTraceId('count_curl');
         return $response;
     }
 
@@ -88,6 +91,7 @@ class Curl extends HttpClient
             $this->is200($response);
         }
 
+        setAtomicByTraceId('count_curl');
         return $response;
     }
 
