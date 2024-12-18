@@ -6,6 +6,7 @@ use App\Constant\AppConst;
 use App\Constant\EnvConst;
 use App\Constant\LoggerConst;
 use AsaEs\AsaEsConst;
+use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Logger;
 use EasySwoole\Http\Message\Status;
@@ -25,6 +26,8 @@ class Middleware
         $self = new self();
         /** Api验签 */
         $self->sign($request, $response);
+        /** 调试模式 */
+        $self->debug($request, $response);
 
         /** 空参数过滤 */
         $self->clearEmptyParams($request, $response);
@@ -154,6 +157,23 @@ class Middleware
         $isError = config("sign.error", true);
         if (!$isSuccess && $isError) {
             throw new ErrorException(401, '签名错误');
+        }
+    }
+
+    /**
+     * debug模式
+     * @param \EasySwoole\Http\Request $request
+     * @param \EasySwoole\Http\Response $response
+     */
+    private function debug(Request $request, Response $response)
+    {
+        $debug = $request->getQueryParam('debug');
+        $secret = config("sign.debug");
+
+        if (!superEmpty($debug) && $secret == $debug) {
+            $running = ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD);
+            $field = EsConst::ES_DEBUG;
+            $running->$field = true;
         }
     }
 }

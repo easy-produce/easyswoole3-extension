@@ -392,6 +392,18 @@ function redisInstance(float $timeout = null): \EasySwoole\Redis\Redis
     return $redisPool->defer($timeout);
 }
 
+function initAtomicByTraceId()
+{
+    $fieldList = ['count_mysql'];
+    $traceId = \Swoole\Coroutine::getContext()['traceId'];
+
+    foreach ($fieldList as $key => $field) {
+        $cache = "{$traceId}_{$field}";
+        $atomic = AtomicManager::getInstance()->add($cache, 0);
+    }
+}
+
+
 function setAtomicByTraceId(string $field, int $int = 1)
 {
     $traceId = \Swoole\Coroutine::getContext()['traceId'];
@@ -431,5 +443,22 @@ function easyGo(callable $callable, ...$args)
         // 调用回调函数并传递参数
         call_user_func_array($callable, $args);
     });
+}
+
+function getEsRunningRecord(string $field)
+{
+    $running = ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD);
+    $exists = isset($running->$field);
+    if (!$exists) {
+        return null;
+    }
+
+    return $running->$field;
+}
+
+function isDebug(): bool
+{
+    $debug = getEsRunningRecord(EsConst::ES_DEBUG);
+    return $debug ? true : false;
 }
 

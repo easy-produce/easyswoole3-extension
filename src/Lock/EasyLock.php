@@ -24,8 +24,6 @@ class EasyLock
             throw new ErrorException(1053, "加锁失败");
         }
 
-        setAtomicByTraceId('count_lock');
-
         return $this;
     }
 

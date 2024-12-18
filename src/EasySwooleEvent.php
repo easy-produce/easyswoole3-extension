@@ -91,6 +91,10 @@ class EasySwooleEvent
                         fwrite(STDOUT, $builder->getLastQuery() . "\n");
                         fwrite(STDOUT, "\n====================  {$nowDate} ====================\n");
                     }
+
+                    if(isDebug()){
+                        Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'trace-debug');
+                    }
                 });
             }
 

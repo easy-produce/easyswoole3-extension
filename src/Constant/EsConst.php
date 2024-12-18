@@ -36,6 +36,7 @@ class EsConst
     const ES_EVENT_CRONTAB_EXCEPTION = 'ops.crontab.exception';
     const ES_EVENT_PROCESS_EXCEPTION = 'ops.process.exception';
     const ES_EVENT_PROCESS_SHUTDOWN = 'ops.process.shutdown';
-    const ES_RUNNING_RECORD = 'es_running_record';
+    const ES_RUNNING_RECORD = 'ES_RUNNING_RECORD';
     const ES_APP_EVENT = 'App\Event';
+    const ES_DEBUG = 'ES_DEBUG';
 }

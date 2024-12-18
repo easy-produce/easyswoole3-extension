@@ -56,19 +56,28 @@ class LoggerHandel implements LoggerInterface
         // 等级
         $levelStr = strtolower($this->levelMap($logLevel));
         // 请求Id
-        $traceId = Trace::getRequestId();
+        $traceId = \Swoole\Coroutine::getContext()['traceId'] ?? '-1';
+
         // env
         $runEnv = isHttp() ? 'http' : 'progres';
         // request
         $request = requestLog();
-
+        // 存储目录
         $logPath = "{$this->logDir}/{$levelStr}/{$category}";
+        if (isDebug()) {
+            $logPath = "{$this->logDir}/trace-debug";
+        }
 
+        /** 清理缓存/创建目录 */
         clearstatcache();
         is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
-
         $fileDate = date('Ymd', time());
+
+        // 存储文件
         $filePath = "{$logPath}/{$fileDate}.log";
+        if (isDebug()) {
+            $filePath = "{$logPath}/{$traceId}.log";
+        }
 
         // 代码中增加用户Id
         $accountId = empty(createUserId()) ? -1 : createUserId();
@@ -83,30 +92,17 @@ class LoggerHandel implements LoggerInterface
                 'is_http' => isHttp(),
                 'request' => $request,
                 'trace_id' => traceId(),
-//                'trace' => implode(',', $this->getTrace() ?? []),
-                'trace' => $this->getTrace()
+                'debug' => isDebug(),
+                'trace' => $this->getTrace(),
+                'server_temp_name' => getServerTempName(),
+                'start_time' => getServerRunTime(),
+                'server_ip' => getServerIp(),
+                'server_type' => getServerType(),
             ],
         ];
 
-        if (isHttp()) {
-            $mysqlQuery = ContextManager::getInstance()->get(EsConst::ES_LOG_MYSQL_QUERY);
-            $lastQuery = isset($mysqlQuery->lastQuery) ? $mysqlQuery->lastQuery : [];
-            $data['last_query'] = $lastQuery;
-            $mysqlQueryCont = count($lastQuery);
-        }
-
+        /** 日志存储 */
         $string = jsonEncode($data);
-
-        // 如果mysql查询行数超过20 单独记日志
-        if (isHttp() && $mysqlQueryCont >= 20) {
-            $mysqlSlowPath = "{$this->logDir}/slow/mysql-{$mysqlQueryCont}";
-            is_dir($mysqlSlowPath) ? null : File::createDirectory($mysqlSlowPath, 0777);
-            $mysqlSlowFilePath = "{$mysqlSlowPath}/{$fileDate}.log";
-            file_put_contents($mysqlSlowFilePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
-        }
-
-        setAtomicByTraceId('count_log');
-
         file_put_contents($filePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
         fwrite(STDOUT, "\n" . $string . "\n");
         return '';
