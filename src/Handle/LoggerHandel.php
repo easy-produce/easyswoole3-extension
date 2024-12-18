@@ -57,6 +57,8 @@ class LoggerHandel implements LoggerInterface
         $levelStr = strtolower($this->levelMap($logLevel));
         // 请求Id
         $traceId = \Swoole\Coroutine::getContext()['traceId'] ?? '-1';
+        // 文件日期
+        $fileDate = date('Ymd', time());
 
         // env
         $runEnv = isHttp() ? 'http' : 'progres';
@@ -71,12 +73,11 @@ class LoggerHandel implements LoggerInterface
         /** 清理缓存/创建目录 */
         clearstatcache();
         is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
-        $fileDate = date('Ymd', time());
 
         // 存储文件
         $filePath = "{$logPath}/{$fileDate}.log";
         if (isDebug()) {
-            $filePath = "{$logPath}/{$traceId}.log";
+            $filePath = "{$logPath}/{$fileDate}/{$traceId}.log";
         }
 
         // 代码中增加用户Id
