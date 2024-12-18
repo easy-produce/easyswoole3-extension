@@ -67,17 +67,13 @@ class LoggerHandel implements LoggerInterface
         // 存储目录
         $logPath = "{$this->logDir}/{$levelStr}/{$category}";
         if (isDebug()) {
-            $logPath = "{$this->logDir}/trace-debug";
+            $logPath = "{$this->logDir}/trace-debug/{$fileDate}";
         }
-
-        /** 清理缓存/创建目录 */
-        clearstatcache();
-        is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
 
         // 存储文件
         $filePath = "{$logPath}/{$fileDate}.log";
         if (isDebug()) {
-            $filePath = "{$logPath}/{$fileDate}/{$traceId}.log";
+            $filePath = "{$logPath}/{$traceId}.log";
         }
 
         // 代码中增加用户Id
@@ -102,10 +98,17 @@ class LoggerHandel implements LoggerInterface
             ],
         ];
 
+        /** 清理缓存/创建目录 */
+        clearstatcache();
+        is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
+
         /** 日志存储 */
         $string = jsonEncode($data);
         file_put_contents($filePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
         fwrite(STDOUT, "\n" . $string . "\n");
+
+        var_dump($filePath, '$filePath');
+        var_dump($logPath, '$logPath');
         return '';
     }
 
