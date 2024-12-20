@@ -107,8 +107,11 @@ class LoggerHandel implements LoggerInterface
         file_put_contents($filePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
         fwrite(STDOUT, "\n" . $string . "\n");
 
-        var_dump($filePath, '$filePath');
-        var_dump($logPath, '$logPath');
+        /** debug不记录 */
+        if (!isDebug()) {
+            setAtomicByTraceId('count_log');
+        }
+
         return '';
     }
 

@@ -15,6 +15,4 @@ class FileLock
         $lock = new EasyLock($fileName);
         return $lock;
     }
-
-
 }
