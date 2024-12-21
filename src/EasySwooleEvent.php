@@ -134,7 +134,7 @@ class EasySwooleEvent
                     /** 初始化运行记录 */
                     $std = new \stdClass();
                     $std->request_time = time();
-                    ContextManager::getInstance()->set(EsConst::ES_RUNNING_RECORD, $std);
+                    \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD] = $std;
 
                     /** 请求唯一标识  */
                     $traceId = Trace::createRequestId();

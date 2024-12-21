@@ -437,9 +437,13 @@ function easyGo(callable $callable, ...$args)
 {
     $traceId = traceId();
     \Swoole\Coroutine::getContext()['traceId'] = $traceId;
-    go(function () use ($callable, $traceId, $args) {
+    $running = \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD];
+
+    setAtomicByTraceId('count_go');
+    go(function () use ($callable, $traceId, $running, $args) {
         // 写入 traceId 到协程上下文中
         \Swoole\Coroutine::getContext()['traceId'] = $traceId;
+        \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD] = $running;
         // 调用回调函数并传递参数
         call_user_func_array($callable, $args);
     });
@@ -447,7 +451,8 @@ function easyGo(callable $callable, ...$args)
 
 function getEsRunningRecord(string $field)
 {
-    $running = ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD);
+    $running = \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD];
+
     $exists = isset($running->$field);
     if (!$exists) {
         return null;

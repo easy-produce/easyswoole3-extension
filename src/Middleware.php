@@ -171,7 +171,7 @@ class Middleware
         $secret = config("sign.debug");
 
         if (!superEmpty($debug) && $secret == $debug) {
-            $running = ContextManager::getInstance()->get(EsConst::ES_RUNNING_RECORD);
+            $running = \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD];
             $field = EsConst::ES_DEBUG;
             $running->$field = true;
         }

@@ -59,7 +59,6 @@ class LoggerHandel implements LoggerInterface
         $traceId = \Swoole\Coroutine::getContext()['traceId'] ?? '-1';
         // 文件日期
         $fileDate = date('Ymd', time());
-
         // env
         $runEnv = isHttp() ? 'http' : 'progres';
         // request
