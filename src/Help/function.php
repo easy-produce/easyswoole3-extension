@@ -433,6 +433,15 @@ function getAtomicByTraceId(string $field): int
     return $count;
 }
 
+function setTraceIdData(string $type, string $field, string $id, string $value)
+{
+    $traceId = \Swoole\Coroutine::getContext()['traceId'];
+
+    $key = "{$type}_{$traceId}";
+
+    Cache::getInstance()->hSet($key, "{$field}_{$id}", $value, 360);
+}
+
 function easyGo(callable $callable, ...$args)
 {
     $traceId = traceId();
