@@ -7,6 +7,8 @@ use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\FastCache\Cache;
 use EasySwoole\Http\Request;
+use EasySwoole\Tracker\Point;
+use EasySwoole\Tracker\PointContext;
 use Es3\Constant\EsConst;
 use Es3\Trace;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -476,3 +478,7 @@ function isDebug(): bool
     return $debug ? true : false;
 }
 
+function setTrackerPoint(string $name): Point
+{
+    return PointContext::getInstance()->next($name);
+}

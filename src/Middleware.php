@@ -42,13 +42,21 @@ class Middleware
                 $instance->$function($request, $response);
             }
         }
+        $point = \EasySwoole\Tracker\PointContext::getInstance()->createStart('onRequest');
     }
+
 
     public static function afterRequest(Request $request, Response $response)
     {
         $self = new self();
         /** 跨域注入 */
         $self->crossDomain($request, $response);
+
+        $point = \EasySwoole\Tracker\PointContext::getInstance()->startPoint();
+        $point->end();
+        $array = \EasySwoole\Tracker\Point::toArray($point);
+//        echo \EasySwoole\Tracker\Point::toString($point);
+        var_dump('111', $point);
 
         /** 执行客户端反射 */
         $className = EsConst::ES_APP_EVENT;

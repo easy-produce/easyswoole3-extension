@@ -92,7 +92,7 @@ class EasySwooleEvent
                         fwrite(STDOUT, "\n====================  {$nowDate} ====================\n");
                     }
 
-                    if(isDebug()){
+                    if (isDebug()) {
                         Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'query');
                     }
                 });
@@ -139,7 +139,7 @@ class EasySwooleEvent
                     /** 请求唯一标识  */
                     $traceId = Trace::createRequestId();
                     \Swoole\Coroutine::getContext()['traceId'] = $traceId;
-                    
+
                     /** 中间件 */
                     Middleware::onRequest($request, $response);
                 });

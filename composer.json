@@ -64,7 +64,8 @@
     "alibabacloud/imageseg-20191230": "*",
     "psr/log": "1.1.4",
     "phpoffice/phpspreadsheet": "1.25",
-    "easyswoole/wechat": "2.x"
+    "easyswoole/wechat": "2.x",
+    "easyswoole/tracker": "^1.1"
   },
   "autoload": {
     "psr-4": {
