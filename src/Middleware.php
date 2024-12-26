@@ -56,7 +56,7 @@ class Middleware
         $point->end();
         $array = \EasySwoole\Tracker\Point::toArray($point);
 //        echo \EasySwoole\Tracker\Point::toString($point);
-        var_dump('111', $point);
+//        var_dump('111', $point);
 
         /** 执行客户端反射 */
         $className = EsConst::ES_APP_EVENT;
