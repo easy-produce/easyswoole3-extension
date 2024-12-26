@@ -42,9 +42,9 @@ class Middleware
                 $instance->$function($request, $response);
             }
         }
-        $point = \EasySwoole\Tracker\PointContext::getInstance()->createStart('onRequest');
+        $point = \EasySwoole\Tracker\PointContext::getInstance()->createStart(__METHOD__);
+        $point->setServiceName(getServerTempName());
     }
-
 
     public static function afterRequest(Request $request, Response $response)
     {
@@ -52,9 +52,9 @@ class Middleware
         /** 跨域注入 */
         $self->crossDomain($request, $response);
 
-        $point = \EasySwoole\Tracker\PointContext::getInstance()->startPoint();
-        $point->end();
-        $array = \EasySwoole\Tracker\Point::toArray($point);
+//        $point = \EasySwoole\Tracker\PointContext::getInstance()->startPoint();
+//        $point->end();
+//        $array = \EasySwoole\Tracker\Point::toArray($point);
 //        echo \EasySwoole\Tracker\Point::toString($point);
 //        var_dump('111', $point);
 

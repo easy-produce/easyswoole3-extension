@@ -478,7 +478,10 @@ function isDebug(): bool
     return $debug ? true : false;
 }
 
-function setTrackerPoint(string $name): Point
+function setTrackerPoint(string $name, array $startArg): Point
 {
-    return PointContext::getInstance()->next($name);
+    $point = PointContext::getInstance()->next($name);
+    $point->setStartArg($startArg);
+
+    return $point;
 }
