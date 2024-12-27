@@ -9,7 +9,6 @@
     "php": ">=8.0",
     "alanchen365/php-easyswoole3-pay": "*",
     "easy-produce/easyswoole3-callback": "*",
-    "easy-produce/php-utility": "*",
     "alanchen365/basic-sdk": "*",
     "easyswoole/easyswoole": "3.6.3",
     "easyswoole/template": "1.1.0",
