@@ -5,6 +5,8 @@ namespace Es3\Tracker;
 
 
 use EasySwoole\Component\Singleton;
+use EasySwoole\EasySwoole\Logger;
+use EasySwoole\Log\LoggerInterface;
 use EasySwoole\Tracker\Excetion\Exception;
 use Swoole\Coroutine;
 
@@ -62,6 +64,10 @@ class PointContext
 
     public function endPoint()
     {
+        if (!isDebug()) {
+            return null;
+        }
+
         $point = \Swoole\Coroutine::getContext()['tracePoint'] ?? null;
         if (empty($point) || !$point instanceof Point) {
             return null;
@@ -69,6 +75,11 @@ class PointContext
 
         $point->setEndMemory(memory_get_usage());
         $point->end();
+
+        /** 最后记录日志 */
+        $point = \Es3\Tracker\PointContext::getInstance()->getPoint();
+        $log = \Es3\Tracker\Point::toString($point);
+        Logger::getInstance()->log($log, LoggerInterface::LOG_LEVEL_NOTICE, 'tracker-point');
     }
 
 
@@ -83,6 +94,7 @@ class PointContext
         if (empty($point) || !$point instanceof Point) {
             return null;
         }
+
         $action = $point->appendChild($name);
         $action->setStartMemory(memory_get_usage());
         return $action;
