@@ -7,8 +7,8 @@ use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
 use EasySwoole\FastCache\Cache;
 use EasySwoole\Http\Request;
-use EasySwoole\Tracker\Point;
-use EasySwoole\Tracker\PointContext;
+use Es3\Tracker\Point;
+use Es3\Tracker\PointContext;
 use Es3\Constant\EsConst;
 use Es3\Trace;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -449,11 +449,13 @@ function easyGo(callable $callable, ...$args)
     $traceId = traceId();
     \Swoole\Coroutine::getContext()['traceId'] = $traceId;
     $running = \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD];
+    $point = PointContext::getInstance()->getPoint();
 
     setAtomicByTraceId('count_go');
-    go(function () use ($callable, $traceId, $running, $args) {
+    go(function () use ($callable, $traceId, $running, $point, $args) {
         // 写入 traceId 到协程上下文中
         \Swoole\Coroutine::getContext()['traceId'] = $traceId;
+        \Swoole\Coroutine::getContext()['tracePoint'] = $point;
         \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD] = $running;
         // 调用回调函数并传递参数
         call_user_func_array($callable, $args);
@@ -478,12 +480,70 @@ function isDebug(): bool
     return $debug ? true : false;
 }
 
-function setTrackerPoint(string $name, ?array $startArg = null): Point
+function startTrackerPoint(string $name, $arg = null)
 {
-    $point = PointContext::getInstance()->next($name);
-    if (!empty($startArg)) {
-        $point->setStartArg($startArg);
+    /** 非debug模式不做任何处理 */
+    if (!isDebug()) {
+        return null;
     }
 
-    return $point;
+    /** 没有 traceId 不做任何处理 */
+    $traceId = \Swoole\Coroutine::getContext()['traceId'];
+    if (empty($traceId)) {
+        return null;
+    }
+
+    /** 如果没初始化则初始化 */
+    $point = \Es3\Tracker\PointContext::getInstance()->getPoint();
+    if (empty($point)) {
+        $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
+        $uri = $request->getServerParams()['request_uri'] ?? 'default';
+        $point = PointContext::getInstance()->createStart($uri);
+        $point->setStartMemory(memory_get_usage());
+    }
+
+    /** 查找节点找不到按next处理 */
+    $point = \Es3\Tracker\PointContext::getInstance()->next($name);
+
+    /** 有参数就写入 */
+    if ($arg && $point instanceof Point) {
+        $point->setStartArg(jsonEncode($arg));
+    }
 }
+
+function endTrackerPoint(string $name, $arg = null)
+{
+    /** 非debug模式不做任何处理 */
+    if (!isDebug()) {
+        return;
+    }
+
+    /** 没有 traceId 不做任何处理 */
+    $traceId = \Swoole\Coroutine::getContext()['traceId'];
+    if (empty($traceId)) {
+        return null;
+    }
+
+    $point = \Es3\Tracker\PointContext::getInstance()->find($name);
+    if (empty($point)) {
+        return;
+    }
+
+    if (!$point instanceof Point) {
+        return;
+    }
+
+    if (!method_exists($point, 'end')) {
+        return;
+    }
+
+    $point->setEndMemory(memory_get_usage());
+
+    if ($arg) {
+        $point->setEndArg(jsonEncode($arg));
+    }
+
+    $point->end();
+}
+
+

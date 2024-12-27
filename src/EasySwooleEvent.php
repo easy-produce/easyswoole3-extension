@@ -37,6 +37,8 @@ use Es3\Handle\HttpThrowable;
 use Es3\Output\Result;
 use Es3\Template\Smarty;
 use Es3\ThrowableHandle\Handle;
+use Es3\Tracker\Point;
+use Es3\Tracker\PointContext;
 
 class EasySwooleEvent
 {

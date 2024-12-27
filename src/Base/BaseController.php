@@ -29,6 +29,7 @@ use Es3\Proxy\DaoProxy;
 use Es3\Proxy\ModelProxy;
 use Es3\Proxy\ServiceProxy;
 use Es3\Proxy\ValidateProxy;
+use Es3\Tracker\PointContext;
 
 class BaseController extends Controller
 {
@@ -288,6 +289,7 @@ class BaseController extends Controller
         /** 修复路由参数不显示的问题 */
         $nQuery = ContextManager::getInstance()->get(AbstractRouter::PARSE_PARAMS_CONTEXT_KEY);
         $query = $this->request()->getQueryParams();
+
 
         if (!superEmpty($nQuery)) {
             $nQuery = array_merge($nQuery, $query);

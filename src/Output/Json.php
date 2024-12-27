@@ -28,8 +28,8 @@ class Json
      */
     public static function success(int $code = ResultConst::SUCCESS_CODE, string $msg = ResultConst::SUCCESS_MSG): void
     {
-//        ContextManager::getInstance()->get(AppConst::DI_RESULT)->setTrace(debug_backtrace());
         Json::setBody($code, $msg, true);
+        $point = \Es3\Tracker\PointContext::getInstance()->endPoint();
     }
 
     /**

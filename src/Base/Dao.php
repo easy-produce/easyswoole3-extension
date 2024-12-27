@@ -323,7 +323,7 @@ trait Dao
             /** 慢SQL记录 */
             setAtomicByTraceId('count_mysql');
             $countId = getAtomicByTraceId('count_mysql');
-            setTraceIdData('run_time_mysql', "start_time", $countId, microtime());
+            setTraceIdData('run_time_mysql', "start_time", $countId, microtime(true));
 
             $queryBuild = new QueryBuilder();
             $queryBuild->setQueryOption($queryOption);
@@ -339,7 +339,7 @@ trait Dao
                 $total = $results->getTotalCount();
             }
 
-            setTraceIdData('run_time_mysql', "end_time", $countId, microtime());
+            setTraceIdData('run_time_mysql', "end_time", $countId, microtime(true));
 
             if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
                 return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
@@ -367,7 +367,7 @@ trait Dao
 
             setAtomicByTraceId('count_mysql');
             $countId = getAtomicByTraceId('count_mysql');
-            setTraceIdData('run_time_mysql', "start_time", $countId, microtime());
+            setTraceIdData('run_time_mysql', "start_time", $countId, microtime(true));
 
             $lastErrorNo = $results->getLastErrorNo();
             $lastError = $results->getLastError();
@@ -376,7 +376,7 @@ trait Dao
                 throw new InfoException(1011, $lastError);
             }
 
-            setTraceIdData('run_time_mysql', "end_time", $countId, microtime());
+            setTraceIdData('run_time_mysql', "end_time", $countId, microtime(true));
 
             return [ResultConst::RESULT_AFFECTED_ROWS_KEY => $results->getAffectedRows(), ResultConst::RESULT_LAST_INSERT_ID_KEY => $results->getLastInsertId()];
         } catch (\Throwable $throwable) {

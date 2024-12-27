@@ -42,8 +42,6 @@ class Middleware
                 $instance->$function($request, $response);
             }
         }
-        $point = \EasySwoole\Tracker\PointContext::getInstance()->createStart(__METHOD__);
-        $point->setServiceName(getServerTempName());
     }
 
     public static function afterRequest(Request $request, Response $response)
@@ -51,12 +49,6 @@ class Middleware
         $self = new self();
         /** 跨域注入 */
         $self->crossDomain($request, $response);
-
-//        $point = \EasySwoole\Tracker\PointContext::getInstance()->startPoint();
-//        $point->end();
-//        $array = \EasySwoole\Tracker\Point::toArray($point);
-//        echo \EasySwoole\Tracker\Point::toString($point);
-//        var_dump('111', $point);
 
         /** 执行客户端反射 */
         $className = EsConst::ES_APP_EVENT;
@@ -68,6 +60,7 @@ class Middleware
                 $instance->$function($request, $response);
             }
         }
+
     }
 
     private function crossDomain(Request $request, Response $response)
@@ -81,21 +74,6 @@ class Middleware
 
         $origin = current($request->getHeader('origin') ?? null) ?? '';
         $origin = rtrim($origin, '/');
-
-        // /** 生产情况的跨域 由 运维处理 */
-        // if (!isProduction()) {
-
-        //     $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
-        //     $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
-        //     $response->withHeader('Access-Control-Allow-Credentials', 'true');
-        // }
-
-        // /** 为了兼容有些项目运维不处理跨域 */
-        // if(isProduction() && isCrossDomain() ){
-        //     $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
-        //     $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
-        //     $response->withHeader('Access-Control-Allow-Credentials', 'true');
-        // }
 
         $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
         $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
