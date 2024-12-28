@@ -77,24 +77,26 @@ class LoggerHandel implements LoggerInterface
 
         // 代码中增加用户Id
         $accountId = empty(createUserId()) ? -1 : createUserId();
+        $serverIp = getServerIp();
 
         $data = [
-            'title' => "[{$date}][{$project}][{$category}][{$accountId}][{$levelStr}][{$traceId}]",
+            'title' => "[{$date}][{$project}][{$category}][{$accountId}][{$levelStr}][{$traceId}][$serverIp]",
             'content' => Text::clearEscape($msg),
             'file' => "{$this->getFile()}",
-            'server' => [
-                'pid' => getmypid(),
-                'is_master' => isMaster(),
-                'is_http' => isHttp(),
-                'request' => $request,
-                'trace_id' => traceId(),
-                'debug' => isDebug(),
-                'trace' => $this->getTrace(),
-                'server_temp_name' => getServerTempName(),
-                'start_time' => getServerRunTime(),
-                'server_ip' => getServerIp(),
-                'server_type' => getServerType(),
-            ],
+            'trace' => $this->getTrace(),
+            'request' => $request,
+
+//            'server' => [
+//                'pid' => getmypid(),
+//                'is_master' => isMaster(),
+//                'is_http' => isHttp(),
+//                'trace_id' => traceId(),
+//                'debug' => isDebug(),
+//                'server_temp_name' => getServerTempName(),
+//                'start_time' => getServerRunTime(),
+//                'server_ip' => getServerIp(),
+//                'server_type' => getServerType(),
+//            ],
         ];
 
         /** 清理缓存/创建目录 */
@@ -102,11 +104,12 @@ class LoggerHandel implements LoggerInterface
         is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
 
         /** 日志存储 */
-        $string = jsonEncode($data);
 
         /** 如果是debug模式 且 日志是链路追踪直接存储 */
-        if (isDebug() && $category == 'tracker-point') {
-            $string = $msg;
+        if (in_array(strtolower($category), ['error', 'warning', 'debug'])) {
+            $string = jsonEncode($data);
+        } else {
+            $string = $msg . "\n";
         }
 
         file_put_contents($filePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
