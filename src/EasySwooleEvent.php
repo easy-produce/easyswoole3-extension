@@ -178,6 +178,7 @@ class EasySwooleEvent
                 Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_SIGN);
             }
 
+
             /** 热加载 */
             if (isDev()) {
                 $hotReloadOptions = new \EasySwoole\HotReload\HotReloadOptions;

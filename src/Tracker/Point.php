@@ -222,10 +222,10 @@ class Point
         }
 
         if ($point->getStartMemory()) {
-            $string .= str_repeat("\t", $depth) . "start_memory: " . (static::argToString($point->getStartMemory())) . "\n";
+            $string .= str_repeat("\t", $depth) . "start_memory: " . (static::argToString($point->getStartMemory())) . " [" . round($point->getStartMemory() / (1024 * 1024), 2) . 'MB] ' . "\n";
         }
         if ($point->getEndMemory()) {
-            $string .= str_repeat("\t", $depth) . "ended_memory: " . (static::argToString($point->getEndMemory())) . "\n";
+            $string .= str_repeat("\t", $depth) . "ended_memory: " . (static::argToString($point->getEndMemory())) . " [" . round($point->getEndMemory() / (1024 * 1024), 2) . 'MB]' . "\n";
         }
 
         if ($point->getStartMemory() && $point->getEndMemory()) {

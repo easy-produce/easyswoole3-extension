@@ -73,7 +73,7 @@ class PointContext
             return null;
         }
 
-        $point->setEndMemory(memory_get_usage());
+        $point->setEndMemory(workerMemoryUsage());
         $point->end();
 
         /** 最后记录日志 */
@@ -96,7 +96,7 @@ class PointContext
         }
 
         $action = $point->appendChild($name);
-        $action->setStartMemory(memory_get_usage());
+        $action->setStartMemory(workerMemoryUsage());
         return $action;
     }
 }

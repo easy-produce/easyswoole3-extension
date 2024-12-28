@@ -163,7 +163,6 @@ class ArrayUtility
      */
     public static function hashmap($arr, $key_field, $value_field = null, $force_string_key = false)
     {
-        startTrackerPoint(__METHOD__);
 
         if (empty($arr)) {
             return array();
@@ -180,7 +179,6 @@ class ArrayUtility
                 $ret[$key] = $row;
             }
         }
-        endTrackerPoint(__METHOD__);
         return $ret;
     }
 
@@ -224,15 +222,12 @@ class ArrayUtility
      */
     public static function groupBy($arr, $key_field)
     {
-        startTrackerPoint(__METHOD__);
-
         $ret = array();
         foreach ($arr as $row) {
             $key = $row[$key_field];
             $ret[$key][] = $row;
         }
 
-        endTrackerPoint(__METHOD__);
         return $ret;
     }
 
@@ -253,8 +248,6 @@ class ArrayUtility
 
     public static function groupByArray($arr, $key_field_arr)
     {
-        startTrackerPoint(__METHOD__);
-
         $ret = array();
         foreach ($arr as $row) {
             $key_arr = [];
@@ -265,7 +258,6 @@ class ArrayUtility
             $ret[$key][] = $row;
         }
 
-        endTrackerPoint(__METHOD__);
         return $ret;
     }
 
@@ -323,7 +315,7 @@ class ArrayUtility
      */
     public static function tree($arr, $key_node_id, $key_parent_id = 'parent_id', $key_childrens = 'childrens', &$refs = null)
     {
-        startTrackerPoint(__METHOD__);
+        
 
         $refs = array();
         foreach ($arr as $offset => $row) {
@@ -346,7 +338,7 @@ class ArrayUtility
             }
         }
 
-        endTrackerPoint(__METHOD__);
+        
         return $tree;
     }
 
@@ -362,7 +354,7 @@ class ArrayUtility
      */
     public static function treeToArray($tree, $key_childrens = 'childrens')
     {
-        startTrackerPoint(__METHOD__);
+        
         $ret = array();
         if (isset($tree[$key_childrens]) && is_array($tree[$key_childrens])) {
             $childrens = $tree[$key_childrens];
@@ -376,7 +368,7 @@ class ArrayUtility
             $ret[] = $tree;
         }
 
-        endTrackerPoint(__METHOD__);
+        
         return $ret;
     }
 
@@ -415,9 +407,9 @@ class ArrayUtility
      */
     public static function sortByCol($array, $keyname, $dir = SORT_ASC)
     {
-        startTrackerPoint(__METHOD__);
+        
         $list = self::sortByMultiCols($array, array($keyname => $dir));
-        endTrackerPoint(__METHOD__);
+        
         return $list;
     }
 
@@ -439,7 +431,7 @@ class ArrayUtility
      */
     public static function sortByMultiCols($rowset, $args)
     {
-        startTrackerPoint(__METHOD__);
+        
 
         $sortArray = array();
         $sortRule = '';
@@ -454,7 +446,7 @@ class ArrayUtility
         }
         eval('array_multisort(' . $sortRule . '$rowset);');
 
-        endTrackerPoint(__METHOD__);
+        
         return $rowset;
     }
 
@@ -477,7 +469,7 @@ class ArrayUtility
      */
     public static function path($array, $path, $default = null)
     {
-        startTrackerPoint(__METHOD__);
+        
 
         if (array_key_exists($path, $array)) {
             return $array[$path];
@@ -518,7 +510,7 @@ class ArrayUtility
                 break;
             }
         } while ($keys);
-        endTrackerPoint(__METHOD__);
+        
         return $default;
     }
 
@@ -539,7 +531,6 @@ class ArrayUtility
      */
     public static function merge(array $a1, array $a2)
     {
-        startTrackerPoint(__METHOD__);
 
         $result = array();
         for ($i = 0, $total = func_num_args(); $i < $total; ++$i) {
@@ -567,7 +558,6 @@ class ArrayUtility
             }
         }
 
-        endTrackerPoint(__METHOD__);
 
         return $result;
     }
@@ -595,7 +585,6 @@ class ArrayUtility
      */
     public static function arrMd2Ud($arr)
     {
-        startTrackerPoint(__METHOD__);
 
         //将数值第一元素作为容器，作地址赋值。
         $ar_room = &$arr[key($arr)];
@@ -615,7 +604,6 @@ class ArrayUtility
             //释放当前下标的数组元素
             unset($arr[$k]);
         }
-        endTrackerPoint(__METHOD__);
 
         return $ar_room;
     }
@@ -630,8 +618,6 @@ class ArrayUtility
      */
     public static function filterKeys($array, $filter_keys, $check = false)
     {
-        startTrackerPoint(__METHOD__);
-
         if (!is_array($array) || !is_array($array)) {
             return false;
         }
@@ -643,14 +629,11 @@ class ArrayUtility
             $return[$key] = isset($array[$key]) ? $array[$key] : '';
         }
 
-        endTrackerPoint(__METHOD__);
         return $return;
     }
 
     public static function join($left_arr, $right_arr, $left_key, $right_key)
     {
-        startTrackerPoint(__METHOD__);
-
         $ret = array();
         $merg = [];
         //使用数组下标的办法
@@ -661,7 +644,6 @@ class ArrayUtility
             $ret[] = array_merge($merg[$value[$right_key]], $value);
         }
 
-        endTrackerPoint(__METHOD__);
         return $ret;
     }
 
@@ -674,8 +656,6 @@ class ArrayUtility
      */
     public static function ConvertToArray($str, $sp = ',')
     {
-        startTrackerPoint(__METHOD__);
-
         $str = trim($str);
         $arr = explode($sp, $str);
         foreach ($arr as $k => $v) {
@@ -683,7 +663,6 @@ class ArrayUtility
                 unset($arr[$k]);
             }
         }
-        endTrackerPoint(__METHOD__);
         return $arr;
     }
 
@@ -696,8 +675,6 @@ class ArrayUtility
      */
     public static function objHashMap($arr, $key_field, $value_field = null, $force_string_key = false)
     {
-        startTrackerPoint(__METHOD__);
-
         $ret = array();
         if ($value_field) {
             foreach ($arr as $row) {
@@ -710,7 +687,6 @@ class ArrayUtility
                 $ret[$key] = $row;
             }
         }
-        endTrackerPoint(__METHOD__);
         return $ret;
     }
 
@@ -722,8 +698,6 @@ class ArrayUtility
      */
     public static function arrayFilterKeys($array, $keys)
     {
-        startTrackerPoint(__METHOD__);
-
         if (empty($array)) {
             return [];
         }
@@ -741,7 +715,6 @@ class ArrayUtility
                 $newArr[] = compact($keys);
             }
         }
-        endTrackerPoint(__METHOD__);
         return $newArr;
     }
 
@@ -750,8 +723,6 @@ class ArrayUtility
      */
     public static function unsetEmpty(array $array)
     {
-        startTrackerPoint(__METHOD__);
-
         if (empty($array)) {
             return [];
         }
@@ -762,7 +733,6 @@ class ArrayUtility
             }
         }
 
-        endTrackerPoint(__METHOD__);
         return $array;
     }
 
@@ -807,8 +777,6 @@ class ArrayUtility
      */
     public static function getArrByKeys(array $array, array $keys = []): array
     {
-        startTrackerPoint(__METHOD__);
-
         $isMultiple = ArrayUtility::isMultiple($array);
 
         /** 一维数组 */
@@ -832,7 +800,6 @@ class ArrayUtility
             }
         }
 
-        endTrackerPoint(__METHOD__);
         return $nList;
     }
 
@@ -841,8 +808,6 @@ class ArrayUtility
      */
     public static function arrayPush(array $array, array $fields)
     {
-        startTrackerPoint(__METHOD__);
-
         if (count($array) == count($array, COUNT_RECURSIVE)) {
 
             foreach ($fields as $field => $val) {
@@ -856,7 +821,6 @@ class ArrayUtility
                 }
             }
         }
-        endTrackerPoint(__METHOD__);
         return $array;
     }
 

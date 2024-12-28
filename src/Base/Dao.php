@@ -20,37 +20,30 @@ trait Dao
 
     public function save(array $params)
     {
-        startTrackerPoint(__METHOD__);
 
         /** 调整参数 */
         $params = $this->adjustWhere($params);
         $params = $this->model->autoCreateUser($params);
 
         setAtomicByTraceId('count_mysql');
-        endTrackerPoint(__METHOD__);
-        
+
         return $this->model::create($params)->save();
     }
 
     public function deleteField(array $data): int
     {
-        startTrackerPoint(__METHOD__);
-
         if (superEmpty($data)) {
             throw new ErrorException(1010, "deleteField()删除参数不能为空");
         }
         $this->model = $this->model::create();
         $res = $this->model->delete($data, true);
         setAtomicByTraceId('count_mysql');
-        endTrackerPoint(__METHOD__);
         return intval($res);
     }
 
     public function updateField(array $originalFieldValues, array $updateFieldValues, $allow = false): int
     {
         try {
-            startTrackerPoint(__METHOD__);
-
             $originalFieldValues = $this->adjustWhere($originalFieldValues);
 
             $schemaInfo = $this->model->schemaInfo();
@@ -79,7 +72,6 @@ trait Dao
             }
 
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
 
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
@@ -91,13 +83,10 @@ trait Dao
 
     public function get(array $where = [], array $field = [])
     {
-        startTrackerPoint(__METHOD__);
-
         $LogicDelete = $this->model->getLogicDelete();
         $where = array_merge($where, $LogicDelete);
 
         setAtomicByTraceId('count_mysql');
-        endTrackerPoint(__METHOD__);
 
         return $this->model::create()->field($field)->get($where);
     }
@@ -105,7 +94,6 @@ trait Dao
     public function delete($where = null, $allow = false): int
     {
         try {
-            startTrackerPoint(__METHOD__);
 
             $this->model = $this->model::create();
             $this->model->delete($where, $allow);
@@ -116,7 +104,6 @@ trait Dao
             }
 
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
 
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
@@ -129,7 +116,6 @@ trait Dao
     public function update(array $data = [], array $primary = [], $allow = false): int
     {
         try {
-            startTrackerPoint(__METHOD__);
 
             $schemaInfo = $this->model->schemaInfo();
             $primaryKey = $schemaInfo->getPkFiledName();
@@ -150,7 +136,6 @@ trait Dao
             }
 
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
             return intval($this->model->lastQueryResult()->getAffectedRows());
         } catch (\Throwable $throwable) {
             setResultFile($throwable, 1);
@@ -161,11 +146,8 @@ trait Dao
     public function getLast(string $field = 'id'): ?array
     {
         try {
-            startTrackerPoint(__METHOD__);
-
             $row = $this->model::create()->order($field, 'DESC')->get();
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
             return $row->toArray() ?? [];
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -192,11 +174,9 @@ trait Dao
     public function setAutoIncrement(int $autoIncrement): void
     {
         try {
-            startTrackerPoint(__METHOD__);
             $schemaInfo = $this->model->schemaInfo();
             $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
             setResultFile($throwable, 2);
@@ -207,8 +187,6 @@ trait Dao
     public function getAll($where = null, array $page = [], array $orderBys = [], array $groupBys = [], array $fields = [])
     {
         try {
-            startTrackerPoint(__METHOD__);
-
             $model = $this->model::create();
             $tableName = $model->getTableName();
             $LogicDelete = $this->model->getLogicDelete();
@@ -253,7 +231,6 @@ trait Dao
             $total = $model->lastQueryResult()->getTotalCount();
 
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
 
             return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
         } catch (\Throwable $throwable) {
@@ -266,7 +243,6 @@ trait Dao
     public function switch(array $ids, string $column, string $switchRule): int
     {
         try {
-            startTrackerPoint(__METHOD__);
             $model = $this->model::create();
             $tableName = $model->getTableName();
 
@@ -277,7 +253,6 @@ trait Dao
             }
 
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
             return $this->update([$column => $switchRule], $ids);
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -289,12 +264,10 @@ trait Dao
     public function truncate(): void
     {
         try {
-            startTrackerPoint(__METHOD__);
             $schemaInfo = $this->model->schemaInfo();
             $this->model = $this->model::create();
             $this->model->query((new QueryBuilder())->raw('TRUNCATE TABLE ' . $schemaInfo->getTable()));
             setAtomicByTraceId('count_mysql');
-            endTrackerPoint(__METHOD__);
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
             setResultFile($throwable, 2);
@@ -304,8 +277,6 @@ trait Dao
 
     public function insertAll(array $data, ?string $column = ''): array
     {
-        startTrackerPoint(__METHOD__);
-
         /** 当前是否开启事物 */
         $this->model = $this->model::create();
 
@@ -318,7 +289,6 @@ trait Dao
         setAtomicByTraceId('count_mysql');
         $result = $this->model->insertAll($data, $column);
 
-        endTrackerPoint(__METHOD__);
         return $result;
     }
 
@@ -348,7 +318,6 @@ trait Dao
     public function query(string $sql, ?array $param = [], bool $isOne = false, array $queryOption = [], bool $raw = false, string $connection = 'default'): ?array
     {
         try {
-            startTrackerPoint(__METHOD__);
             /** 计算总行数查询条件 */
             if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
                 $queryOption[] = 'SQL_CALC_FOUND_ROWS';
@@ -376,11 +345,9 @@ trait Dao
             setTraceIdData('run_time_mysql', "end_time", $countId, microtime(true));
 
             if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
-                endTrackerPoint(__METHOD__);
                 return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
             }
 
-            endTrackerPoint(__METHOD__);
             return $list;
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
@@ -392,8 +359,6 @@ trait Dao
     public function exec(string $sql, ?array $param = [], bool $raw = true, string $connection = 'default'): array
     {
         try {
-            startTrackerPoint(__METHOD__);
-
             $queryBuild = new QueryBuilder();
             // 支持参数绑定 第二个参数非必传
             $queryBuild->raw($sql, $param);
@@ -415,7 +380,6 @@ trait Dao
 
             setTraceIdData('run_time_mysql', "end_time", $countId, microtime(true));
 
-            endTrackerPoint(__METHOD__);
             return [ResultConst::RESULT_AFFECTED_ROWS_KEY => $results->getAffectedRows(), ResultConst::RESULT_LAST_INSERT_ID_KEY => $results->getLastInsertId()];
         } catch (\Throwable $throwable) {
             // 手动设置异常位置

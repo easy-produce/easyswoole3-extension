@@ -103,6 +103,12 @@ class LoggerHandel implements LoggerInterface
 
         /** 日志存储 */
         $string = jsonEncode($data);
+
+        /** 如果是debug模式 且 日志是链路追踪直接存储 */
+        if (isDebug() && $category == 'tracker-point') {
+            $string = $msg;
+        }
+
         file_put_contents($filePath, "{$string}" . "\n", FILE_APPEND | LOCK_EX);
         fwrite(STDOUT, "\n" . $string . "\n");
 

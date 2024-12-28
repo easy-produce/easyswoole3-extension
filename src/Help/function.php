@@ -5,6 +5,7 @@ use App\Constant\AppConst;
 use EasySwoole\Component\AtomicManager;
 use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
+use EasySwoole\Component\Process\Manager;
 use EasySwoole\FastCache\Cache;
 use EasySwoole\Http\Request;
 use Es3\Tracker\Point;
@@ -12,7 +13,6 @@ use Es3\Tracker\PointContext;
 use Es3\Constant\EsConst;
 use Es3\Trace;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-
 
 
 /**
@@ -71,7 +71,6 @@ function isDouble($val): bool
 {
     return is_float($val) || is_double($val);
 }
-
 
 
 function isProduction(): bool
@@ -560,7 +559,7 @@ function startTrackerPoint(string $name, $arg = null)
         $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
         $uri = $request->getServerParams()['request_uri'] ?? 'default';
         $point = PointContext::getInstance()->createStart($uri);
-        $point->setStartMemory(memory_get_usage());
+        $point->setStartMemory(workerMemoryUsage());
     }
 
     /** 查找节点找不到按next处理 */
@@ -598,11 +597,48 @@ function endTrackerPoint(string $name, $arg = null)
         return;
     }
 
-    $point->setEndMemory(memory_get_usage());
+    $point->setEndMemory(workerMemoryUsage());
 
     if ($arg) {
         $point->setEndArg(jsonEncode($arg));
     }
 
     $point->end();
+}
+
+
+function workerProcessInfo()
+{
+    $process = null;
+
+    $table = Manager::getInstance()->getProcessTable();
+    foreach ($table as $pid => $p) {
+        if (getmypid() == $pid) {
+            $process = $p;
+        }
+    }
+
+    return $process;
+}
+
+function workerMemoryUsage()
+{
+    $process = workerProcessInfo();
+
+    if (empty($process)) {
+        return -1;
+    }
+
+    return $process['memoryUsage'] ?? null;
+}
+
+function workerMemoryPeakUsage()
+{
+    $process = workerProcessInfo();
+
+    if (empty($process)) {
+        return -1;
+    }
+
+    return $process['memoryPeakUsage'] ?? null;
 }
