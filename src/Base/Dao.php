@@ -342,6 +342,9 @@ trait Dao
                 $total = $results->getTotalCount();
             }
 
+            $rowsCount = is_array($list) ? count($list) : -1;
+            setTraceIdData('run_total_mysql', "query", $countId, $rowsCount);
+
             setTraceIdData('run_time_mysql', "end_time", $countId, microtime(true));
 
             if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
