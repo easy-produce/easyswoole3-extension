@@ -70,7 +70,16 @@ class Crontab
                         }
 
                         // 注册定时任务
-                        $crontab->register(new $class);
+                        try {
+                            $crontab->register(new $class);
+                        } catch (\Throwable $throwable) {
+                            if (isProduction()) {
+                                Logger::getInstance()->log("Crontab Initialize Fail: {$className} hash been register", LoggerInterface::LOG_LEVEL_ERROR, 'crontab');
+                            } else {
+                                echo "Crontab Initialize Fail: {$className} hash been register";
+                                exit();
+                            }
+                        }
 
                         echo Utility::displayItem('CRONTAB', $class);
                         echo "\n";
