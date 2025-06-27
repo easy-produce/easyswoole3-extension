@@ -275,7 +275,7 @@ trait Dao
         }
     }
 
-    public function insertAll(array $data, ?string $column = ''): array
+    public function insertAll(array $data, ?string $column = '',?string $tableName = ''): array
     {
         /** 当前是否开启事物 */
         $this->model = $this->model::create();
@@ -287,7 +287,7 @@ trait Dao
         }
 
         setAtomicByTraceId('count_mysql');
-        $result = $this->model->insertAll($data, $column);
+        $result = $this->model->insertAll($data, $column, $tableName);
 
         return $result;
     }

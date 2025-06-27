@@ -10,8 +10,8 @@ class CallbackConstant
     const SAVE_LOG_COUNT = 3;
 
     /** 限流配置（微秒） */
-    const LIMIT_LEVEL_LOW = 1000000;  // 每个任务间隔1秒执行 ;
-    const LIMIT_LEVEL_CENTER = 500000; // 每个任务间隔0.5秒执行
+    const LIMIT_LEVEL_LOW = 500000;  // 每个任务间隔1秒执行 ;
+    const LIMIT_LEVEL_CENTER = 100000; // 每个任务间隔0.5秒执行
     const LIMIT_LEVEL_HIGH = -1;  // 不限制 并且并发执行
     const LIMIT_LEVEL_FAIL = 10000000;  // 每个任务间隔10秒执行 ;
 

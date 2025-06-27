@@ -95,7 +95,7 @@ class EasySwooleEvent
                     }
 
                     if (isDebug()) {
-                        Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'query');
+                        Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_WARNING, 'query');
                     }
                 });
             }
