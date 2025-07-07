@@ -13,6 +13,9 @@ use Es3\Tracker\PointContext;
 use Es3\Constant\EsConst;
 use Es3\Trace;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Channel\AMQPChannel;
+use Swoole\Coroutine;
+use Swoole\Coroutine\Channel;
 
 
 /**
@@ -443,6 +446,21 @@ function rabbitMqInstance(float $timeout = null): AMQPStreamConnection
 
     return $rabbitPool->defer($timeout);
 }
+
+function rabbitMqInstanceChannel(float $timeout = null): AMQPChannel
+{
+    $rabbitPool = \EasySwoole\Pool\Manager::getInstance()->get(EsConst::ES_RABBIT);
+    if (!$rabbitPool instanceof \Es3\Pool\RabbitPool) {
+        throw new  \Es3\Exception\ErrorException(10124, "获取rabbitMq连接池异常");
+    }
+
+    /** @var AMQPStreamConnection $mq */
+    $mq =  $rabbitPool->defer($timeout);
+
+    $cid = \Swoole\Coroutine::getCid();
+    return $mq->channel($cid);
+}
+
 
 function redisInstance(float $timeout = null): \EasySwoole\Redis\Redis
 {
