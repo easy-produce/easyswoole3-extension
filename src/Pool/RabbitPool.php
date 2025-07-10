@@ -30,7 +30,19 @@ class RabbitPool extends AbstractPool
             $this->rabbitConfig->getPort(),
             $this->rabbitConfig->getUsername(),
             $this->rabbitConfig->getPassword(),
-            $this->rabbitConfig->getVhost()
+            $this->rabbitConfig->getVhost(),
+
+            $this->rabbitConfig->isInsist(),
+            $this->rabbitConfig->getLoginMethod(),
+            $this->rabbitConfig->getLoginResponse(),
+            $this->rabbitConfig->getLocale(),
+            $this->rabbitConfig->getConnectionTimeout(),
+            $this->rabbitConfig->getReadWriteTimeout(),
+            $this->rabbitConfig->getContext(),
+            $this->rabbitConfig->isKeepalive(),
+            $this->rabbitConfig->getHeartbeat(),
+            $this->rabbitConfig->getChannelRpcTimeout(),
+            $this->rabbitConfig->getSslProtocol(),
         );
     }
 }
