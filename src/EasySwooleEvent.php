@@ -224,7 +224,8 @@ class EasySwooleEvent
             $rabbitConf = config('rabbit', true) ?? null;
             if (!superEmpty($rabbitConf)) {
                 // 连接池注册
-                $config = new \EasySwoole\Pool\Config();
+                $rabbitPoolConf = $rabbitConf['pool'] ?? [];
+                $config = new \EasySwoole\Pool\Config($rabbitPoolConf);
                 $rabbitConfig = new \Es3\Queue\Config\RabbitConfig($rabbitConf);
                 \EasySwoole\Pool\Manager::getInstance()->register(new \Es3\Pool\RabbitPool($config, $rabbitConfig), EsConst::ES_RABBIT);
             }

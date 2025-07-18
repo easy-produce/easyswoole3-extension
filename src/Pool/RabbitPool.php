@@ -45,4 +45,21 @@ class RabbitPool extends AbstractPool
             $this->rabbitConfig->getSslProtocol(),
         );
     }
+
+    public function itemIntervalCheck($connection): bool
+    {
+        /** @var \PhpAmqpLib\Connection\AMQPStreamConnection $connection */
+        try {
+            if (!$connection->isConnected()) {
+                return false;
+            }
+
+            // 主动检查心跳
+            $connection->checkHeartBeat();
+            return true;
+        } catch (\Throwable $e) {
+            echo "出现异常 : {$e->getMessage()} file : {$e->getFile()} line {$e->getLine()}";
+            return false;
+        }
+    }
 }
