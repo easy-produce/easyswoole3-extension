@@ -124,7 +124,7 @@ class Result
         ];
 
         // 不是生产环境增加追踪机制
-        if (!isProduction()) {
+        if (!isProduction() || isDebug()) {
             $data['trace'] = $this->_trace;
         }
 

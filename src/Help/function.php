@@ -660,3 +660,31 @@ function workerMemoryPeakUsage()
 
     return $process['memoryPeakUsage'] ?? null;
 }
+
+function rabbitMqChannel(callable $callback, float $timeout = null)
+{
+    /** @var 获取连接池 $pool */
+    $pool = \EasySwoole\Pool\Manager::getInstance()->get(EsConst::ES_RABBIT);
+    if (!$pool instanceof \Es3\Pool\RabbitPool) {
+        throw new \Es3\Exception\ErrorException(10124, "获取rabbitMq连接池异常");
+    }
+
+    return $pool->invoke(function (\PhpAmqpLib\Connection\AMQPStreamConnection $connection) use ($callback) {
+        $channel = $connection->channel(\Swoole\Coroutine::getCid());
+        try {
+            return $callback($channel);
+        } finally {
+            // 安全关闭通道
+            if ($channel instanceof \PhpAmqpLib\Channel\AMQPChannel && $channel->is_open()) {
+                echo "关闭通道 \n";
+                $channel->close();
+            }
+
+            // 安全关闭链接
+            if($connection->isConnected()){
+                echo "关闭链接 \n";
+                $connection->close();
+            }
+        }
+    }, $timeout);
+}
