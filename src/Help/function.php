@@ -680,11 +680,11 @@ function rabbitMqChannel(callable $callback, float $timeout = null)
                 $channel->close();
             }
 
-            // 安全关闭链接
-            if($connection->isConnected()){
-                echo "关闭链接 \n";
-                $connection->close();
-            }
+//            // 安全关闭链接
+//            if($connection->isConnected()){
+//                echo "关闭链接 \n";
+//                $connection->close();
+//            }
         }
     }, $timeout);
 }
