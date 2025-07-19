@@ -6,6 +6,7 @@ use EasySwoole\Pool\AbstractPool;
 use EasySwoole\Pool\Config;
 use Es3\Queue\Config\RabbitConfig;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Exception\AMQPProtocolChannelException;
 
 class RabbitPool extends AbstractPool
 {
@@ -52,6 +53,16 @@ class RabbitPool extends AbstractPool
         try {
             if (!$connection->isConnected()) {
                 return false;
+            }
+
+            try {
+                $channel = $connection->channel();
+                $channel->queue_declare('ping', passive: true);
+                return true;
+            } catch (AMQPProtocolChannelException $e) {
+                if ($e->getCode() === 404) {
+                    return true;
+                }
             }
 
             // 主动检查心跳
