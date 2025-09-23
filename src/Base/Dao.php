@@ -275,7 +275,7 @@ trait Dao
         }
     }
 
-    public function insertAll(array $data, ?string $column = '',?string $tableName = ''): array
+    public function insertAll(array $data, ?string $column = '', ?string $tableName = '', ?bool $ignoreError = false): array
     {
         /** 当前是否开启事物 */
         $this->model = $this->model::create();
@@ -287,7 +287,7 @@ trait Dao
         }
 
         setAtomicByTraceId('count_mysql');
-        $result = $this->model->insertAll($data, $column, $tableName);
+        $result = $this->model->insertAll($data, $column, $tableName, $ignoreError);
 
         return $result;
     }
@@ -355,7 +355,17 @@ trait Dao
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
             setResultFile($throwable, 2);
-            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+
+            $code = $throwable->getCode();
+            // 如果不是调试模式 并且在生产环境下将报错模糊化
+            if (isProduction() && !isDebug()) {
+                $msg = "查询出现错误，请稍后再试";
+                $code = $code == 0 ? 8888 : $code;
+            } else {
+                $msg = $throwable->getMessage();
+            }
+
+            throw new ErrorException($code, $msg);
         }
     }
 
@@ -387,7 +397,17 @@ trait Dao
         } catch (\Throwable $throwable) {
             // 手动设置异常位置
             setResultFile($throwable, 2);
-            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+
+            $code = $throwable->getCode();
+            // 如果不是调试模式 并且在生产环境下将报错模糊化
+            if (isProduction() && !isDebug()) {
+                $msg = "操作出现错误，请稍后再试";
+                $code = $code == 0 ? 8889 : $code;
+            } else {
+                $msg = $throwable->getMessage();
+            }
+
+            throw new ErrorException($code, $msg);
         }
     }
 

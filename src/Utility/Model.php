@@ -23,14 +23,20 @@ class Model
         return in_array($column, $columnList) ? true : false;
     }
 
-    public static function insertAll(string $tableName, array $data): array
+    // $data,$tableName, $column, $ignoreError
+    public static function insertAll(array $data, ?string $column = '', ?string $tableName = '', ?bool $ignoreError = false): array
     {
         if (superEmpty($data)) {
             throw new ErrorException(34111, "批量插入时缺少数据");
         }
 
         // 初始化SQL语句和参数数组
-        $sql = "INSERT INTO `$tableName` ";
+        if($ignoreError){
+            $sql = "INSERT IGNORE INTO `$tableName` ";
+        }else{
+            $sql = "INSERT INTO `$tableName` ";
+        }
+
         $params = [];
         $firstItemKeys = array_keys($data[0]);
         $columns = implode('`, `', $firstItemKeys);
@@ -45,6 +51,7 @@ class Model
 
         // 去掉最后一个逗号，准备执行
         $sql = rtrim($sql, ',') . ";";
+
 
         // 此函数现在仅返回SQL和参数，实际执行需在外部完成
         return [ResultConst::DB_QUERY => $sql, ResultConst::DB_BIND => $params];

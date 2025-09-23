@@ -65,9 +65,9 @@ trait Service
      * 批量插入
      * @param array $data 二维数组
      */
-    public function insertAll(array $data): array
+    public function insertAll(array $data, ?string $column = '', ?string $tableName = '', ?bool $ignoreError = false): array
     {
-        return $this->dao->insertAll($data);
+        return $this->dao->insertAll($data, $column, $tableName, $ignoreError);
     }
 
     /**

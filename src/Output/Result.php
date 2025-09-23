@@ -6,6 +6,7 @@ use App\Constant\AppConst;
 use App\Constant\ResultConst;
 use EasySwoole\Component\Context\ContextManager;
 use EasySwoole\Component\Di;
+use Es3\Constant\EsConst;
 use Es3\EsConfig;
 use Es3\Utility\Text;
 
@@ -113,19 +114,37 @@ class Result
             $trace = $this->_trace;
         }
 
+        $req = \Swoole\Coroutine::getContext()[EsConst::ES_RUNNING_RECORD];
+
+
         $data = [
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
-            ResultConst::MSG_KEY => "{$this->_msg}",
-            'file' => $file,
-//            'line' => $line,
-            ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
-            'trace_id' => ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE),
+            ResultConst::MSG_KEY => "{$this->_msg}"
         ];
 
         // 不是生产环境增加追踪机制
         if (!isProduction() || isDebug()) {
-            $data['trace'] = $this->_trace;
+
+            // 获取请求时间（如果是秒级时间戳，需要转成浮点数）
+            $requestTimestamp = $req->request_time ?? time();
+            $responseTimestamp = microtime(true);
+
+            // 计算处理时间（毫秒）
+            $timeDiffMs = round(($responseTimestamp - $requestTimestamp) * 1000, 3);
+
+            // 格式化时间（含毫秒）
+            $requestDateTime = \DateTime::createFromFormat('U.u', sprintf('%.6f', $requestTimestamp));
+            $responseDateTime = \DateTime::createFromFormat('U.u', sprintf('%.6f', $responseTimestamp));
+
+            $data['request_time'] = $requestDateTime->format('Y-m-d H:i:s.v');
+            $data['response_time'] = $responseDateTime->format('Y-m-d H:i:s.v');
+            $data['process_time'] = "{$timeDiffMs}ms";
+
+            $data['file'] = $file;
+            $data['line'] = $line;
+            $data['trace'] = $this->getTrace();
+            $data['trace_id'] = ContextManager::getInstance()->get(AppConst::DI_TRACE_CODE);
         }
 
 //        if (empty($this->_result)) {

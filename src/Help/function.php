@@ -144,20 +144,12 @@ function array_save(array $array, array $keys = []): array
 
 function clientIp(): ?string
 {
-//    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
     $request = ContextManager::getInstance()->get(AppConst::DI_REQUEST);
     if (!($request instanceof Request)) {
         return null;
     }
-    // 优先在x-forwarded-for获取
-    $xForwardedFor = headers()['x-forwarded-for'] ?? '';
-    $ip = current(explode(',', $xForwardedFor)) ?? null;
 
-    if (!$ip) {
-        $ip = headers()['remote_ip'] ?? null;
-    }
-
-    // 最后获取 remote_ip 需要在nginx转过来
+    $ip = headers()['client_ip'] ?? null;
     return $ip;
 }
 
@@ -458,7 +450,7 @@ function rabbitMqInstanceChannel(float $timeout = null): AMQPChannel
     $mq =  $rabbitPool->defer($timeout);
 
     $cid = \Swoole\Coroutine::getCid();
-    return $mq->channel($cid);
+    return $mq->channel();
 }
 
 
@@ -670,7 +662,7 @@ function rabbitMqChannel(callable $callback, float $timeout = null)
     }
 
     return $pool->invoke(function (\PhpAmqpLib\Connection\AMQPStreamConnection $connection) use ($callback) {
-        $channel = $connection->channel(\Swoole\Coroutine::getCid());
+        $channel = $connection->channel();
         try {
             return $callback($channel);
         } finally {

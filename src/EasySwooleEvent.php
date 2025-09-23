@@ -39,6 +39,7 @@ use Es3\Template\Smarty;
 use Es3\ThrowableHandle\Handle;
 use Es3\Tracker\Point;
 use Es3\Tracker\PointContext;
+use Es3\Utility\Random;
 
 class EasySwooleEvent
 {
@@ -87,7 +88,8 @@ class EasySwooleEvent
                         $mysqlQuery->lastQuery[] = $builder->getLastQuery();
                     }
 
-                    $nowDate = date('Y-m-d H:i:s', time());
+                    $nowDate = \DateTime::createFromFormat('U.u', sprintf('%.6f', microtime(true)))->format('Y-m-d H:i:s.v');
+
                     if (!isProduction()) {
                         fwrite(STDOUT, "\n====================  {$nowDate} ====================\n\n");
                         fwrite(STDOUT, $builder->getLastQuery() . "\n");
@@ -95,7 +97,10 @@ class EasySwooleEvent
                     }
 
                     if (isDebug()) {
+                        $uuid = Random::makeUUIDV4() ."_". $nowDate;
+                        startTrackerPoint($uuid,$builder->getLastQuery());
                         Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_WARNING, 'query');
+                        endTrackerPoint($uuid);
                     }
                 });
             }

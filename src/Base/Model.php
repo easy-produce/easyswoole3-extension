@@ -129,13 +129,13 @@ class Model extends AbstractModel
     /**
      * 重写model中的自动开启事物
      */
-    public function insertAll($data,string $column = '',string $tableName = ''): array
+    public function insertAll(array $data, ?string $column = '', ?string $tableName = '', ?bool $ignoreError = false): array
     {
-        if(empty($tableName)){
+        if (empty($tableName)) {
             $tableName = $this->getTableName();
         }
 
-        $data = \Es3\Utility\Model::insertAll($tableName, $data);
+        $data = \Es3\Utility\Model::insertAll($data, $column,$tableName, $ignoreError);
 
         $sql = $data[ResultConst::DB_QUERY];
         $bind = $data[ResultConst::DB_BIND];
