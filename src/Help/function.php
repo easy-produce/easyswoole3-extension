@@ -149,7 +149,7 @@ function clientIp(): ?string
         return null;
     }
 
-    $ip = headers()['client_ip'] ?? null;
+    $ip = headers()['2e80dcf8dba2f506_ip'] ?? null;
     return $ip;
 }
 
